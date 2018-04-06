@@ -1,0 +1,9 @@
+What does that mean to think in term of reactive and event
+
+First exposure
+First code with an Observable of the planets 
+Subscribe
+
+Rx java 1 vs. Rx java 2
+
+Relation with Vert.x ?

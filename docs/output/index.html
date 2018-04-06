@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.6.1">
+<meta name="author" content="Clement Escoffier, Julien Viet, Stéphane Epardaud, Julien Ponge">
+<title>Vert.x - From zero to (micro)-hero</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<meta name="keywords" content="Vert.x, Hands-on, Lab, Tutorial, Workshop, RX Java, Reactive, Reactive eXtensions">
+<meta name="description" content="A hand's on lab about RxJava 2">
+
+
+<link href="assets/css/asciidoctor.css" media="screen" rel="stylesheet">
+<link href="assets/css/bootstrap.css" media="screen" rel="stylesheet">
+<link href="assets/css/font-awesome.min.css" media="screen" rel="stylesheet">
+<link href="assets/css/hol.css" media="screen" rel="stylesheet">
+<script src="assets/js/jquery-3.1.1.js"></script>
+<script src="assets/js/bootstrap.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $(document)
+            .find("div.assignment")
+            .each(function(index, elt) {
+                elt = $(elt);
+                var content = elt.children("div.content");
+                content.hide();
+                var button = $("<button type='button'>Show me the code</button>");
+                elt.append(button).on("click", function() {
+                    button.remove();
+                    content.show();
+                });
+            });
+    });
+</script>
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Vert.x - From zero to (micro)-hero</h1>
+<div class="details">
+<span id="author" class="author">Clement Escoffier, Julien Viet, Stéphane Epardaud, Julien Ponge</span><br>
+<span id="revnumber">version 0.1,</span>
+<span id="revdate">April, 6th, 2018</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_what_s_an_observable">1. What&#8217;s an Observable</a></li>
+<li><a href="#_creating_a_stream_with_onnext">2. Creating a stream with OnNext</a></li>
+<li><a href="#_introducing_oncomplete_and_onerror">3. Introducing onComplete and onError</a></li>
+<li><a href="#_just_a_bit_of_processing">4. Just a bit of processing</a></li>
+<li><a href="#_creating_a_stream_with_just_or_fromiterable">5. Creating a stream with "just" or "fromIterable"</a></li>
+<li><a href="#_subscriber">6. Subscriber</a></li>
+<li><a href="#_hot_vs_cold">7. Hot vs. Cold</a>
+<ul class="sectlevel2">
+<li><a href="#_cold_observable">7.1. Cold observable</a></li>
+<li><a href="#_hot_observable">7.2. Hot observable</a></li>
+<li><a href="#_connectable_observable">7.3. Connectable observable</a></li>
+</ul>
+</li>
+<li><a href="#_stopping_emissions">8. Stopping emissions</a></li>
+<li><a href="#_single_completable_and_maybe">Single, Completable and Maybe</a>
+<ul class="sectlevel1">
+<li><a href="#_single">1. Single</a></li>
+<li><a href="#_maybe">2. Maybe</a></li>
+<li><a href="#_completable">3. Completable</a></li>
+<li><a href="#_doonnext">4. doOnNext, &#8230;&#8203;.</a></li>
+<li><a href="#_filter">5. Filter</a></li>
+<li><a href="#_map">6. Map</a></li>
+<li><a href="#_scan">7. Scan</a></li>
+<li><a href="#_from_observable_to_single">8. From observable to single</a></li>
+<li><a href="#_error_recovery">9. Error recovery</a></li>
+<li><a href="#_flatmap">10. FlatMap</a></li>
+</ul>
+</li>
+<li><a href="#_merging_streams_and_zipping_values">Merging streams and zipping values</a></li>
+<li><a href="#_flowable_and_back_pressure">Flowable and back pressure</a></li>
+<li><a href="#_transformation_and_custom_operators">Transformation and custom operators</a>
+<ul class="sectlevel1">
+<li><a href="#_transformers">1. Transformers</a></li>
+<li><a href="#_to">2. to()</a></li>
+<li><a href="#_custom_operators">3. Custom operators</a></li>
+</ul>
+</li>
+<li><a href="#_testing_all_the_things">Testing all the things</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>What does that mean to think in term of reactive and event</p>
+</div>
+<div class="paragraph">
+<p>First exposure
+First code with an Observable of the planets
+Subscribe</p>
+</div>
+<div class="paragraph">
+<p>Rx java 1 vs. Rx java 2</p>
+</div>
+<div class="paragraph">
+<p>Relation with Vert.x ?
+= Observables and Subscribers</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_what_s_an_observable">1. What&#8217;s an Observable</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_stream_with_onnext">2. Creating a stream with OnNext</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Exercise with an emitter (Observable.create &#8594; &#8230;&#8203;.)
+Simple subscriber</p>
+</div>
+<div class="paragraph">
+<p>Emissions are passed one at a time and sequentially</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introducing_oncomplete_and_onerror">3. Introducing onComplete and onError</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_just_a_bit_of_processing">4. Just a bit of processing</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Just a teasing, add map and filter (map(String::length).filter(i &#8594; i &gt;= 6))</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_creating_a_stream_with_just_or_fromiterable">5. Creating a stream with "just" or "fromIterable"</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Same example with just instead of create / emitter</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_subscriber">6. Subscriber</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>the interface</p>
+</div>
+<div class="paragraph">
+<p>Subscriber with 1 lambda
+Subscriber with all 3 possibilities</p>
+</div>
+<div class="paragraph">
+<p>+ examples</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_hot_vs_cold">7. Hot vs. Cold</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>explanation</p>
+</div>
+<div class="sect2">
+<h3 id="_cold_observable">7.1. Cold observable</h3>
+<div class="paragraph">
+<p>1 source, 2 subscribers &#8658; same output</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hot_observable">7.2. Hot observable</h3>
+<div class="paragraph">
+<p>1 hot source (counter for instance), 2 subscribers</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_connectable_observable">7.3. Connectable observable</h3>
+<div class="paragraph">
+<p>take a source  and make it hot
+dispatch to all observer at once</p>
+</div>
+<div class="paragraph">
+<p>1 connectable source &#8594; 2 Subscribers</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_stopping_emissions">8. Stopping emissions</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Disposing</p>
+</div>
+</div>
+</div>
+<h1 id="_single_completable_and_maybe" class="sect0">Single, Completable and Maybe</h1>
+<div class="paragraph">
+<p>Stream of 1, 0 and maybe 1 elements</p>
+</div>
+<div class="sect1">
+<h2 id="_single">1. Single</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>onSuccess (and not onNext)
+onError
+no onComplete</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>creation with just</p>
+</li>
+<li>
+<p>observable.first</p>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_maybe">2. Maybe</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>onSuccess
+onError
+onComplete</p>
+</div>
+<div class="paragraph">
+<p>Example with Maybe (completed and not completed)</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_completable">3. Completable</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>onComplete
+onError</p>
+</div>
+<div class="paragraph">
+<p>Example
+# Operators</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_doonnext">4. doOnNext, &#8230;&#8203;.</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_filter">5. Filter</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_map">6. Map</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_scan">7. Scan</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_from_observable_to_single">8. From observable to single</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To list, to sorted list, to Map, collect?</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_error_recovery">9. Error recovery</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_flatmap">10. FlatMap</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<h1 id="_merging_streams_and_zipping_values" class="sect0">Merging streams and zipping values</h1>
+<div class="paragraph">
+<p>not sure we will keep it.
+Unresolved directive in index.adoc - include::chapters/6-create_a_rx_api.adoc[Creating a library with RX]
+# Schedulers and concurrency</p>
+</div>
+<h1 id="_flowable_and_back_pressure" class="sect0">Flowable and back pressure</h1>
+
+<h1 id="_transformation_and_custom_operators" class="sect0">Transformation and custom operators</h1>
+<div class="sect1">
+<h2 id="_transformers">1. Transformers</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_to">2. to()</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_custom_operators">3. Custom operators</h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<h1 id="_testing_all_the_things" class="sect0">Testing all the things</h1>
+
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 0.1<br>
+Last updated 2018-04-06 09:44:02 UTC
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+<script>prettyPrint()</script>
+</body>
+</html>

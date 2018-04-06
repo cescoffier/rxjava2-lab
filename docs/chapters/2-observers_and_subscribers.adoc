@@ -1,0 +1,53 @@
+= Observables and Subscribers
+
+== What's an Observable
+
+== Creating a stream with OnNext
+
+Exercise with an emitter (Observable.create -> ....)
+Simple subscriber
+
+Emissions are passed one at a time and sequentially
+
+== Introducing onComplete and onError
+
+== Just a bit of processing
+
+Just a teasing, add map and filter (map(String::length).filter(i -> i >= 6))
+
+== Creating a stream with "just" or "fromIterable"
+
+Same example with just instead of create / emitter
+
+== Subscriber
+
+the interface
+
+Subscriber with 1 lambda
+Subscriber with all 3 possibilities
+
++ examples
+
+== Hot vs. Cold
+
+explanation
+
+=== Cold observable
+
+1 source, 2 subscribers => same output
+
+=== Hot observable
+
+1 hot source (counter for instance), 2 subscribers
+
+=== Connectable observable
+
+take a source  and make it hot
+dispatch to all observer at once
+
+1 connectable source -> 2 Subscribers
+
+== Stopping emissions
+
+Disposing
+

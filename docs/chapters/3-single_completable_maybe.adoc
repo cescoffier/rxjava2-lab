@@ -1,0 +1,28 @@
+# Single, Completable and Maybe
+
+Stream of 1, 0 and maybe 1 elements
+
+## Single
+
+onSuccess (and not onNext)
+onError
+no onComplete
+
+1. creation with just
+
+2. observable.first
+
+## Maybe
+
+onSuccess
+onError
+onComplete
+
+Example with Maybe (completed and not completed)
+
+## Completable
+
+onComplete
+onError
+
+Example

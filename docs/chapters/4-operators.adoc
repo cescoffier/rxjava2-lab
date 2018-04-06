@@ -1,0 +1,18 @@
+# Operators
+
+## doOnNext, ....
+
+## Filter
+
+## Map
+
+## Scan
+
+## From observable to single
+
+To list, to sorted list, to Map, collect?
+
+## Error recovery
+
+## FlatMap
+

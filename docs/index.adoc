@@ -1,0 +1,21 @@
+# Vert.x - From zero to (micro)-hero
+Clement Escoffier, Julien Viet, Stéphane Epardaud, Julien Ponge
+v0.1, April, 6th, 2018
+:toc: left
+:toclevels: 4
+:imagesdir: images
+:docinfo1:
+:icons: font
+
+include::chapters/0-introduction.adoc[Introduction]
+include::chapters/1-thinking_reactive.adoc[Thinking the reactive way]
+include::chapters/2-observers_and_subscribers.adoc[Streams and Subscribers]
+include::chapters/3-single_completable_maybe.adoc[Streams of 1, 0 or 0..1 elements]
+include::chapters/4-operators.adoc[Operators]
+include::chapters/5-merge_zip.adoc[Merging and Zipping streams]
+include::chapters/6-create_a_rx_api.adoc[Creating a library with RX]
+include::chapters/7-schedulers.adoc[Schedulers and concurrency]
+include::chapters/8-flowable_and_back_pressure.adoc[Flowable and Back-pressure]
+include::chapters/9-transformation_and_custom_operators.adoc[Transformation and Custom Operators]
+include::chapters/10-testing.adoc[Testing]
+
