@@ -1,9 +1,90 @@
-What does that mean to think in term of reactive and event
+== The reactive thinking: from OOP to streams
 
-First exposure
-First code with an Observable of the planets 
-Subscribe
+Forget everything you know about code, and look around. Modeling this world with code is challenging. As developers, we tends to use counter-intuitive approaches. Since the 80's, object-oriented computing has been seen as the silver bullet. Every entity from our world is represented with an object containing fields and exposing methods. Most of the time, interacting with these objects is done using a synchronous and blocking protocol. You call it, and wait for a response. 
 
-Rx java 1 vs. Rx java 2
+But... the world in which we are living is asynchronous. The interactions are done using events, messages and stimuli. So overcome the limitations of the object orientation, many patterns and paradigm emerged. But, more recently functional programming is making a come-back, not to replace the object-orientation, but to complement it. _Reactive programming_ is a functional event-driven programming approach tat is used in combination of the regular object-oriented paradigm.
 
-Relation with Vert.x ?
+Microsoft created a few years ago a reactive programming framework for .NET called http://reactivex.io/[Reactive eXtensions] (also called ReactiveX or RX). RX is an API for asynchronous programming with **observable streams**. This API has been ported to several languages such as Swift, JavaScript, Python, C++ and Java. 
+
+Let's observe our world for a moment. Observe entities in motion, traffic jams, weather, conversations, financial markets. Things are moving and evolving concurrently. Multiple _things_ happen at the same time, sometimes independently, sometimes in an orchestrated manner. Each objects is creating a _stream_ of events. For instance, your mouse cursor position is moving. The sequence of position is a stream. The number of people in the room, it may be stable, but someone can come in or go out, generating a new value. So we have another stream of values. There is a fundamental mantra behind reactive programming: _events are data and data are events_.
+
+But don't be mistaken, reactive programming is not a silver bullet. Reactive programming and RX let you express business logic in term of streams of events, helping you with concurrency and error recovery; but don't think it's magic... because it's not. 
+
+=== "Enough philosophy, I wanna see code"
+
+Alright! Let's see code. Can we start with our beloved XML? In the `pom.xml` file located at the source of the code repository, you can see a few dependencies. One of them is:
+
+[source,xml]
+----
+<dependency>
+    <groupId>io.reactivex.rxjava2</groupId>
+    <artifactId>rxjava</artifactId>
+    <version>x.y.z</version>
+</dependency>                      
+----
+
+That's the only dependency you need to start using RX Java. 
+
+Now open the `src/main/java/me/escoffier/lab/chapter1/Code1.java`:
+
+[source,java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter1/Code1.java[]
+----
+
+This is your first RX Java application. A couple of points to notice:
+
+* `import io.reactivex.*;` imports the classes form RX Java
+* `Observable<String>`: represents a stream of data (here `String`). Notice the class name, it invites you to _observe_ it.
+* `Observable.fromIterable`: creates a stream (`Observable`) from a collection
+* `stream.subscribe`: declare an observer consuming the data passing in the streams. The passed lambda is called for each item.
+
+Run this example and you should see:
+
+[source, txt]
+----
+Superman
+Batman
+Aquaman
+Asterix
+Captain America
+----
+
+Obviously, feel free to change the list of super heroes. 
+
+=== That's all?
+
+Ok, not really impressive... But the true power of RX Java comes from its set of operators to manipulate the streams. Jump to `src/main/java/me/escoffier/lab/chapter1/Code2.java`:
+
+[code, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter1/Code2.java[]
+----
+
+This example use two operators:
+
+1. `map`: for each item of the observed stream, apply the function - here transform the name to uppercase
+2. `filter`: for each item of the observed stream (the uppercase names), select only names starting with a `A`.
+
+Run this example, you should see:
+
+[source, txt]
+----
+AQUAMAN
+ASTERIX
+----
+
+There is a very important point to make here: operators consume items from a stream and produce a stream. The first part is simple to understand. Typically, for `filter`, it received `SUPERMAN` then `BATMAN` and so on. The second part is a bit more tricky. Let's take map as an example:
+
+[source]
+----
+Input :  Superman    Batman     Aquaman ... <- input stream
+            |           |          |
+Result:  SUPERMAN    BATMAN     AQUAMAN ... <- this is also a stream
+----
+
+It produces  one value per received value, in other words, a sequence of value: it's also a stream.
+
+### Ready to see more
+
+In this chapter, you have seen very basic RX Java 2, there is a lot more... 

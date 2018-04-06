@@ -1,0 +1,70 @@
+== Introduction
+
+In this lab, we are going to see how Reactive eXtension for Java (RX Java) let you use reactive programming and build concurrent and responsive applications.
+
+This lab offers attendees an intro-level, hands-on session with RX Java, from the first line of code, to making a library exposing RX Java API. It illustrates what reactive programming is, and how to build applications using this paradigm. Yes, because it's a paradigm and it's quite different from _traditional_ Java development.
+
+This is a BYOL (Bring Your Own Laptop) session, so bring your Windows, OSX, or Linux laptop. You need JDK 8+ on your machine, and Apache Maven (3.5+).
+
+=== Prerequisites
+
+We will get to the good stuff, coding all the way soon... But before we start, we need to install a couple of software on our machine.
+
+==== Hardware
+
+* Operating System: whatever recent enough
+* Memory: At least 4 GB+
+
+==== Java Development Kit
+We need a JDK 8+ installed on our machine. Latest JDK can downloaded from:
+
+* http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8]
+
+You can use either Oracle JDK or OpenJDK.
+
+==== Apache Maven
+
+1. Download Apache Maven from https://maven.apache.org/download.cgi.
+2. Unzip to a directory of your choice and add it to the `$PATH`.
+
+==== IDE
+We recommend you to use an IDE. You can use Eclipse IDE, VS Code, IntelliJ or Netbeans.
+
+_No IDE ?_
+If you don’t have an IDE, here are the step to get started with Eclipse.
+
+1. First download Eclipse from https://www.eclipse.org/downloads/[the download page].
+2. In the Eclipse Package list, select Eclipse IDE for Java Developers. It brings you to a download page with a Download button.
+3. Once downloaded, unzip it.
+4. In the destination directory, you should find an `eclipse` binary that you can execute.
+5. Eclipse asks you to create a workspace.
+6. Once launched, click on the Workbench arrow (top right corner).
+
+=== Let’s start !
+[source, bash]
+----
+git clone https://github.com/cescoffier/rxjava2-lab.git
+----
+
+You can import the code in your IDE as a Maven project. You can refer to your IDE documentation to know how to import Maven projects.
+
+For Eclipse:
+
+1. Click on `File - Import …​ - Maven - Existing Maven Projects``
+2. Select the location where you cloned the sources
+3. Click Finish and wait...
+
+=== How to run the different exercises
+
+Maven is only used to retrieve a few dependencies. From the location where you cloned the repository, run:
+
+[source, bash]
+----
+mvn compile
+----
+
+It will download the required dependencies.
+
+The code is in `src/main/java`. All the exercises have a `public static void main(String... args)` method. To run the exercise, just run this `main` method.
+
+I believe you are ready to start! 
