@@ -52,11 +52,13 @@ Captain America
 
 Obviously, feel free to change the list of super heroes. 
 
+A gently note about `subscribe`... If you don't subscribe to a stream, nothing happen. None of the processing stage will be executed until you subscribe on it. This is very important to remember to avoid thousands of hour of debugging!
+
 === That's all?
 
 Ok, not really impressive... But the true power of RX Java comes from its set of operators to manipulate the streams. Jump to `src/main/java/me/escoffier/lab/chapter1/Code2.java`:
 
-[code, java]
+[source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter1/Code2.java[]
 ----

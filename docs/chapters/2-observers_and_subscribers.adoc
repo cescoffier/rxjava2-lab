@@ -1,53 +1,198 @@
 = Observables and Subscribers
 
-== What's an Observable
+== Anatomy of a stream
 
-== Creating a stream with OnNext
+What's a _stream_. A stream is a sequence of data, potentially unbounded. These data may be known or unknown when the stream is created. We will see later that some special streams emits a single item, and some none at all.
 
-Exercise with an emitter (Observable.create -> ....)
-Simple subscriber
+In a (regular) _stream_, 3 types of items can be conveyed, and so an observer can receive 3 types of events, each of them is notified using one of the following method:
 
-Emissions are passed one at a time and sequentially
+* `onNext` - this passes each item the observed stream is emitting
+* `onComplete` - this communicates the end of the stream. `onNext` won't be called anymore. This notification does not happen on unbounded streams
+* `onError` - this communicates that something bad happened up the chain to the observer. Unless there is a `retry` (we will cover this later), the stream won't emit anymore items. `onComplete` is not called either in this case.
 
-== Introducing onComplete and onError
+Time to go back to code. Open the `me.escoffier.lab.chapter2.Code1` class, and extend the code to display a message (using `System.out.println`) when:
 
-== Just a bit of processing
+1. an item is emitted
+2. the stream is completed
 
-Just a teasing, add map and filter (map(String::length).filter(i -> i >= 6))
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code1_Solution.java[]
+----
+****
 
-== Creating a stream with "just" or "fromIterable"
+You should get an output like:
 
-Same example with just instead of create / emitter
+[source]
+----
+Next >> Superman
+Next >> Batman
+Next >> Aquaman
+Next >> Asterix
+Next >> Captain America
+Completion
+----
 
-== Subscriber
+Now, let's see what happen when an error occurs. In `me.escoffier.lab.chapter2.Code2`, use the `doOnComplete`, `doOnNext` and `doOnError` to print the different events.
 
-the interface
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code2_Solution.java[]
+----
+****
 
-Subscriber with 1 lambda
-Subscriber with all 3 possibilities
+Notice the output:
 
-+ examples
+[source]
+----
+>> SUPERMAN
+>> BATMAN
+>> AQUAMAN
+Oh no! What a terrible failure!
+----
 
-== Hot vs. Cold
+Once the error is reached, no more items are sent. In addition, the `doOnComplete` method is not called.
 
-explanation
+While the `doOnX` methods are interesting to understand what's going on and also implement side-effects (be aware not necessary a good thing), you can also receives these event in the subscriber directly. The `subscribe` method can:
 
-=== Cold observable
+* receive the items such as in: `stream.subscribe(i -> {});`
+* receive the error such as in: `stream.subscribe(i -> {}, err -> {});`
+* receive the completion event such as in: `stream.subscribe(i -> {}, err -> {}, () -> {});`
 
-1 source, 2 subscribers => same output
 
-=== Hot observable
+You can also implement the subscriber interface directly. In `me.escoffier.lab.chapter2.Code3`, use the 3 lambdas version of the `subscribe` method to print the different events. 
 
-1 hot source (counter for instance), 2 subscribers
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code3_Solution.java[]
+----
+****
 
-=== Connectable observable
+In this example the stream is created with the method `just` taking the list of items as parameter.
 
-take a source  and make it hot
-dispatch to all observer at once
+== Creating more dynamic streams
 
-1 connectable source -> 2 Subscribers
+So far we always used a stream with a fixed collection of values. Of course, items emitted by streams may be unknown at creation time. But let's see how streams works first.
 
-== Stopping emissions
+The `create` method takes a method in parameter called on every subscription (so for every subscriber). The following code show how this method is used:
 
-Disposing
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code4.java[]
+----
+
+Now open the `me.escoffier.lab.chapter2.Code5` class and extend it to inject a failure between two emissions.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code5_Solution.java[]
+----
+****
+
+When you run it you can notice the same behavior as before: once an error is injected, the other values are not received by the subscriber (even if the stream continue emitting errors). This is because, one the error is received, the subscription is canceled - meaning that it does not observe the events anymore. 
+
+Let's see another example to exhibit this behavior:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code6.java[]
+----
+
+This application takes user inputs and build a stream out of them. So for every line it emits the value. If the line contains "error", an error is injected. If the line contains "done" the stream is closed. If you run the application and enter: `hello`, `foo`, `error`, `not received anymore` you get the following output:
+
+[source]
+----
+hello
+Received: hello
+foo
+Received: foo
+error
+BOOM
+not received anymore
+----
+
+== Hot vs. Cold streams
+
+Things are becoming a bit more subtle... This is a key concept to grasp before going further. Streams can be _cold_ or _hot_ (like coffee). 
+
+=== Cold streams
+
+A cold stream restarts from the beginning for each subscriber, and all subscribers get the full set of items. For instance, let's have a look to the following code:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code7.java[]
+----
+
+When running this application (`me.escoffier.lab.chapter2.Code7`) you get:
+
+[source]
+---
+[A] Received: Black Canary
+[A] Received: Catwoman
+[A] Received: Elektra
+[A] Completion
+[B] Received: Black Canary
+[B] Received: Catwoman
+[B] Received: Elektra
+[B] Completion
+---
+
+As you can see, both subscribers get the full set of items. 
+
+=== Hot streams
+
+Unlike cold streams, hot streams broadcast the same items to all listening subscribers. However, if a subscribers arrive later, it won't receive the previous items. Logically, hot streams represent _events_ or _facts_ rather then known finite data sets.
+
+Let's imagine a counter. This counter is incremented every second, and this value is emitted in a stream. When a subscriber start listening it only get the data emitted after that. This behavior is depicted in the `me.escoffier.lab.chapter2.Code8` class:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code8.java[]
+----
+
+When running this application, you can see an output similar to:
+
+[source]
+----
+[A] Received: 0
+[A] Received: 1
+[B] Received: 1
+[A] Received: 2
+[B] Received: 2
+[A] Received: 3
+[B] Received: 3
+[A] Received: 4
+[B] Received: 4
+...
+----
+
+The first subscriber (A) received the values 0, 1, 2, 3 and 4. The second subscriber (B)arrives one second later and so missed the value 0. It just receives 1, 2, 3 and 4.
+
+There are ways to transform cold stream into hot stream named `ConnectableObservable`. We won't cover these in this lab, but we invite you to check the https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators[documentation].
+
+=== Stopping emissions
+
+Cleanup is always a good thing. In the previous example, we had 2 subscribers. Let's reuse this example, but this time _cancel the subscription_ after some time. 
+
+The `subscribe` method returns a `io.reactivex.disposables.Disposable` object that allows cancelling the subscription using the `dispose` method. The class `me.escoffier.lab.chapter2.Code9` uses this method to cancel the subscription to the hot stream:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter2/Code9.java[]
+----
+
+Once canceled, the subscriber does not receive any event anymore. It does not get a completion event either.
+
+== Streams, streams, streams...
+
+In this chapter we have seen how are structured streams, how they behave and how observers/subscribers work. We have only seen streams containing a set of data. In the next chapter we will see some more special streams.
 

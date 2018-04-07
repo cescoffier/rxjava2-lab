@@ -1,11 +1,12 @@
-package me.escoffier.lab.chapter1;
+package me.escoffier.lab.chapter2;
+
 
 import io.reactivex.Observable;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class Code2 {
+public class Code1_Solution {
 
     private static List<String> SUPER_HEROS = Arrays.asList(
         "Superman",
@@ -16,12 +17,9 @@ public class Code2 {
     );
 
     public static void main(String... args) {
-        Observable
-            .fromIterable(SUPER_HEROS)
-            .map(n -> n.toUpperCase())
-            .filter(name -> name.startsWith("A"))
-            .subscribe(
-                name -> System.out.println(name)
-            );
+        Observable.fromIterable(SUPER_HEROS)
+            .doOnNext(s -> System.out.println("Next >> " + s))
+            .doOnComplete(() -> System.out.println("Completion"))
+            .subscribe();
     }
 }
