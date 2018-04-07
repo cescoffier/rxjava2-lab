@@ -1,28 +1,62 @@
-# Single, Completable and Maybe
+== Single, Completable, Maybe and Flowable
 
-Stream of 1, 0 and maybe 1 elements
+In the previous chapters we have used streams containing several items. In this chapter, we are going to see some specialized streams:
 
-## Single
+* Single - A stream emitting 1 item
+* Maybe - A stream emitting 0 or 1 item
+* Completable - A stream containing no items
+* Flowable - A multi-item stream support back-pressure
 
-onSuccess (and not onNext)
-onError
-no onComplete
+=== Single
 
-1. creation with just
+A `Single` is a specialized stream that only emit one item. It works like the `Observable` streams we have seen previously but is limited to operators that make sense for a single emission. Typically, `doOnNext` and `doOnComplete` are replaced by `doOnSuccess` that accept the produced item.
 
-2. observable.first
+In `me.escoffier.lab.chapter3.Code1`, you can see how this new method is used:
 
-## Maybe
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter3/Code1.java[]
+----
 
-onSuccess
-onError
-onComplete
+This specialization also affects the `subscribe` method and provides a new form accepting the result and the error in a _biconsumer_. In  `me.escoffier.lab.chapter3.Code2`, complete the code to use this new variant.
 
-Example with Maybe (completed and not completed)
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter3/Code2_Solution.java[]
+----
+****
 
-## Completable
+Singles are often used for asynchronous operation returning a single result, such as an HTTP request. 
 
-onComplete
-onError
+=== Maybe
 
-Example
+Maybe is a stream that can emit 0 or 1 item. Maybe is useful because Single can't emit `null` (`null` is an illegal value). Maybe observers are notified:
+
+* when a value is emitted using the `onSuccess` method,
+* when the stream complete, without a value using the `onComplete` method,
+* when an error is thrown using the `onError` method
+
+Notice the subtlety about `onSuccess` and `onComplete`. The first one is called when there is a value. The second one is called when there is not. This behavior is shown in the class `me.escoffier.lab.chapter3.Code3`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter3/Code3.java[]
+----
+
+The output of this code is:
+
+[source]
+----
+[A] Received Superman
+[A] Subscriber Received Superman
+[B] Completion
+[B] Completed
+----
+
+Maybes are often used for method that may return `null`. For example, an asynchronous version of a `findById` method would return a `Maybe`.
+
+=== Completable
+
+Completable represents a stream not emitting a value but simply concerned with an _action_ being executed. As a consequence, it does not provide a `doOnNext` method as there is no _next_. 

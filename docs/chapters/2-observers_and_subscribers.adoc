@@ -2,7 +2,7 @@
 
 == Anatomy of a stream
 
-What's a _stream_. A stream is a sequence of data, potentially unbounded. These data may be known or unknown when the stream is created. We will see later that some special streams emits a single item, and some none at all.
+What's a _stream_. A stream is a sequence of data, potentially unbounded. These data may be known or unknown when the stream is created. We will see later that some special streams emit a single item, and some none at all. Streams are asynchronous constructs. When you observe a stream, you don't know when a data is going to be emitted.
 
 In a (regular) _stream_, 3 types of items can be conveyed, and so an observer can receive 3 types of events, each of them is notified using one of the following method:
 

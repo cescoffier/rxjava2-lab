@@ -8,7 +8,7 @@ Microsoft created a few years ago a reactive programming framework for .NET call
 
 Let's observe our world for a moment. Observe entities in motion, traffic jams, weather, conversations, financial markets. Things are moving and evolving concurrently. Multiple _things_ happen at the same time, sometimes independently, sometimes in an orchestrated manner. Each objects is creating a _stream_ of events. For instance, your mouse cursor position is moving. The sequence of position is a stream. The number of people in the room, it may be stable, but someone can come in or go out, generating a new value. So we have another stream of values. There is a fundamental mantra behind reactive programming: _events are data and data are events_.
 
-But don't be mistaken, reactive programming is not a silver bullet. Reactive programming and RX let you express business logic in term of streams of events, helping you with concurrency and error recovery; but don't think it's magic... because it's not. 
+But don't be mistaken, reactive programming is not a silver bullet. Reactive programming and RX let you express business logic in term of streams of events, helping you with concurrency and error recovery; but don't think it's magic... because it's not. RX gives you superpower when dealing with asynchronous scenarios, but it does not come without costs.
 
 === "Enough philosophy, I wanna see code"
 
