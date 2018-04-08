@@ -1,10 +1,8 @@
-# Operators
+== Stream Operators
 
-## doOnNext, ....
+We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` method. In this section, we will introduce some more. We can't cover all of them, we just explores the most common ones.
 
-## Filter
 
-## Map
 
 ## Scan
 

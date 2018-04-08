@@ -1,24 +1,20 @@
 package me.escoffier.lab.chapter3;
 
 
-import io.reactivex.Maybe;
+import io.vertx.core.json.JsonObject;
+import io.vertx.reactivex.ext.web.client.HttpResponse;
+import me.escoffier.superheroes.SuperHeroesService;
+
+import static me.escoffier.superheroes.Helpers.client;
 
 public class Code3 {
 
-
     public static void main(String[] args) {
-        Maybe.just("Superman")
-            .subscribe(
-                name -> System.out.println("[A] Received " + name),
-                Throwable::printStackTrace,
-                () -> System.out.println("[A] Completed")
-            );
+        SuperHeroesService.run();
 
-        Maybe.empty()
-            .subscribe(
-                name -> System.out.println("[B] Received " + name + " (not called)"),
-                Throwable::printStackTrace,
-                () -> System.out.println("[B] Completed")
-            );
+        client().get("/heroes").rxSend()
+            .map(HttpResponse::bodyAsJsonObject)
+            .map(JsonObject::size)
+            .subscribe(length -> System.out.println("Number of heroes: " + length));
     }
 }
