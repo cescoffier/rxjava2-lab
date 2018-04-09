@@ -1,2 +1,7 @@
 == How to create a RX API
 
+- Take an existing blocking API
+- Schedule every operation in a thread pool
+- Notify listener when done
+- Claim it is reactive!
+ 

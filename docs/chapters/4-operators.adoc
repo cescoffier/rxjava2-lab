@@ -1,10 +1,10 @@
 == Stream Operators
 
-We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` method. In this section, we will introduce some more. We can't cover all of them, we just explores the most common ones.
+We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` method. In this section, we will introduce some more. We can't cover all of them, so we will just explore the most common ones.
 
 === Filter, First, Take, Skip...
 
-This first set of operators allows to select the set of item to re-emit from a source.
+This first set of operators allows us to select the set of items to re-emit from a source.
 
 === Scan
 
