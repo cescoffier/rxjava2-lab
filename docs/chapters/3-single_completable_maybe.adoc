@@ -5,7 +5,7 @@ In the previous chapters we have used streams containing several items. In this 
 * Single - A stream emitting 1 item
 * Maybe - A stream emitting 0 or 1 item
 * Completable - A stream containing no items
-* Flowable - A multi-item stream support back-pressure
+* Flowable - A multi-item stream supporting back-pressure
 
 === Single
 
@@ -28,7 +28,7 @@ include::../../src/main/java/me/escoffier/lab/chapter3/Code2_Solution.java[]
 ----
 ****
 
-Singles are often used for asynchronous operation returning a single result, such as an HTTP request. The following example use the Vert.x Web Client to retrieve a list of super heroes:
+Singles are often used for asynchronous operations returning a single result, such as an HTTP request. The following example uses the Vert.x Web Client to retrieve a list of super heroes:
 
 [source, java]
 ----
@@ -48,7 +48,7 @@ _Super Heroes & Villains service_: the previous example is the first use of this
 
 === Maybe
 
-Maybe is a stream that can emit 0 or 1 item. Maybe is useful because Single can't emit `null` (`null` is an illegal value). Maybe observers are notified:
+`Maybe` is a stream that can emit 0 or 1 item. It is useful because `Single` can't emit `null` (`null` is an illegal value). `Maybe` observers are notified:
 
 * when a value is emitted using the `onSuccess` method,
 * when the stream complete, without a value using the `onComplete` method,
@@ -71,7 +71,7 @@ The output of this code is:
 [B] Completed
 ----
 
-Maybes are often used for method that may return `null`. For example, an asynchronous version of a `findById` method would return a `Maybe`. Let's use maybe to check if there is a super heroes named "Yoda" and another one named "Clement". Open the `me.escoffier.lab.chapter3.Code5` class and fill the code. The output should be something like:
+`Maybe` is often used for methods that may return `null`. For example, an asynchronous version of a `findById` method would return a `Maybe`. Let's use `Maybe` to check if there is a super heroe named "Yoda" and another one named "Clement". Open the `me.escoffier.lab.chapter3.Code5` class and fill the code. The output should be something like:
 
 [source]
 ----
@@ -92,14 +92,14 @@ Don't forget to stop the process once done.
 
 === Completable
 
-Completable represents a stream not emitting a value but simply concerned with an _action_ being executed. As a consequence, it does not provide a `doOnNext` method as there is no _next_. It indicates the successful completion of a (potentially asynchronous) process or its failure:
+`Completable` represents a stream not emitting a value but simply concerned with an _action_ being executed. As a consequence, it does not provide a `doOnNext` method as there is no _next_. It indicates the successful completion of a (potentially asynchronous) process or its failure:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter3/Code6.java[]
 ----
 
-In `me.escoffier.lab.chapter3.Code7`, fill the code to write a simple message into a file. For this use the method named `rxWriteFile` that accept the path (such as `hello.txt`) and a `Buffer` (such as `Buffer.buffer("hello")`). It returns a `Completable` indicating when the file has been written (and it the write has been successful).
+In `me.escoffier.lab.chapter3.Code7`, fill the code to write a simple message into a file. For this, use the method named `rxWriteFile` that accepts the path (such as `hello.txt`) and a `Buffer` (such as `Buffer.buffer("hello")`). It returns a `Completable` indicating when the file has been written to (and it the write has been successful).
 
 [.assignment]
 ****
@@ -111,9 +111,9 @@ include::../../src/main/java/me/escoffier/lab/chapter3/Code7_Solution.java[]
 
 === Flowable and back pressure
 
-So far, we have seen example of stream that were pushing items to subscribers. However, there is an issue with this model. If your consumer cannot keep up with the pace, something bad is going to happen. Putting a buffer in between will only handle small bumps. This is where back pressure comes into the picture. But first, let's illustrate the example.
+So far, we have seen examples of streams that were pushing items to subscribers. However, there is an issue with this model. If your consumer cannot keep up with the pace, something bad is going to happen. Putting a buffer in between will only handle small bumps. This is where back pressure comes into the picture. But first, let's illustrate the example.
 
-In `me.escoffier.lab.chapter3.Code8`, we create an stream of integer and display them in the `subscribe` method after a small nap:
+In `me.escoffier.lab.chapter3.Code8`, we create a stream of integers and display them in the `subscribe` method after a small nap:
 
 [source, java]
 ----
@@ -136,14 +136,14 @@ Received : 4
 
 If you run this example, everything is fine. Each emission is processed one by one, and one at a time from the source all the way down to the subscriber. This is because a single thread is involved in the process, making everything synchronous. It creates a serialized processing, no problem so far.
 
-Now let's introduce a change of thread (Schedulers will be covered later - just trust us for now). This code is in `me.escoffier.lab.chapter3.Code9`:
+Now let's introduce a change of thread (`Schedulers` will be covered later - just trust us for now). This code is in `me.escoffier.lab.chapter3.Code9`:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter3/Code9.java[]
 ----
 
-Running this example produce an output similar to the following one:
+Running this example produces an output similar to the following one:
 
 [source, java]
 ----
@@ -162,9 +162,9 @@ Constructing item using 707299
 ...
 ----
 
-We have constructed many many items, while the subscriber is only processing the item 95! The emissions of the number are too fast for the consumer, and because the emissions are being pushed in  an unbounded buffer by `observeOn`, this can be the source of many problems such as... out of memory.
+We have constructed many items, while the subscriber is only processing the item 95! The emissions of the numbers are too fast for the consumer, and because the emissions are being pushed into an unbounded buffer by `observeOn`, this can be the source of many problems such as... running out of memory.
 
-To mitigate this issue, RX Java 2 provides a stream named `Flowable`. `Flowable` is like `Observable` (so may contain multiple items), but implement a back-pressure protocol. This protocol tells the source stream to emit items at a pace specified by the consumer. `Flowable` use a protocol named http://www.reactive-streams.org/[Reactive Streams]. This specification has been introduced in Java 9 under the name `java.util.concurrent.Flow` and is becoming widely popular.
+To mitigate this issue, RX Java 2 provides a stream named `Flowable`. `Flowable` is like `Observable` (it may contain multiple items), but implements a back-pressure protocol. This protocol tells the source stream to emit items at a pace specified by the consumer. `Flowable` uses a protocol named http://www.reactive-streams.org/[Reactive Streams]. This specification has been introduced in Java 9 under the name `java.util.concurrent.Flow` and is becoming widely popular.
 
 Let's revisit the previous example, but instead of `Observable.range`, let's use `Flowable.range`. This code is in `me.escoffier.lab.chapter3.Code10`:
 
@@ -205,13 +205,13 @@ Received : 103
 ....
 ----
 
-What we can see here is that the source emits a set of items (128) and then, 96 items have been processed by the rest of the flow. During that time, no items have been emitted. So the consumer is telling to the source that it can't handle more at that time, and the source stops emitting. When the consumer can finally handle more items, it requests more to the source. So no more risk of OOM!
+What we can see here is that the source emits a set of items (128) and then, 96 items have been processed by the rest of the flow. During that time, no items have been emitted. So the consumer is telling to the source that it can't handle more at that time, and the source stops emitting. When the consumer can finally handle more items, it requests more to the source. No more risk of OOM!
 
-Notice that RX JAva 2 provides some other back pressure strategies such as using buffer, or dropping data. Check the https://github.com/ReactiveX/RxJava/wiki/Backpressure-(2.0)[documentation] for further details on these strategies.
+Notice that RX Java 2 provides some other back pressure strategies such as using buffers, or dropping data. Check the https://github.com/ReactiveX/RxJava/wiki/Backpressure-(2.0)[documentation] for further details on these strategies.
 
 == Conclusion
 
-In this chapter we have seen a few different specialized streams to handle various situation. The following table summarizes when to use what:
+In this chapter we have seen a few different specialized streams to handle various situations. The following table summarizes when to use what:
 
 |===
 |Type |Use case
