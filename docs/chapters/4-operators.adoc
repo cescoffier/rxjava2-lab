@@ -2,15 +2,19 @@
 
 We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` method. In this section, we will introduce some more. We can't cover all of them, we just explores the most common ones.
 
+=== Filter, First, Take, Skip...
 
+This first set of operators allows to select the set of item to re-emit from a source.
 
-## Scan
+=== Scan
 
-## From observable to single
+=== From observable to single
 
 To list, to sorted list, to Map, collect?
 
-## Error recovery
+=== Error recovery
 
-## FlatMap
+=== FlatMap
+
+=== Merge and Zip
 

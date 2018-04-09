@@ -1,2 +1,0 @@
-# Schedulers and concurrency
-

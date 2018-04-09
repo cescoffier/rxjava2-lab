@@ -87,6 +87,6 @@ Result:  SUPERMAN    BATMAN     AQUAMAN ... <- this is also a stream
 
 It produces  one value per received value, in other words, a sequence of value: it's also a stream.
 
-### Ready to see more
+=== Ready to see more
 
 In this chapter, you have seen very basic RX Java 2, there is a lot more... 

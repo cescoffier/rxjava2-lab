@@ -1,4 +1,0 @@
-#  Merging streams and zipping values
-
-
-not sure we will keep it.
