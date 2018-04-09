@@ -2,13 +2,13 @@
 
 Forget everything you know about code, and look around. Modeling this world with code is challenging. As developers, we tends to use counter-intuitive approaches. Since the 80's, object-oriented computing has been seen as the silver bullet. Every entity from our world is represented with an object containing fields and exposing methods. Most of the time, interacting with these objects is done using a synchronous and blocking protocol. You call it, and wait for a response. 
 
-But... the world in which we are living is asynchronous. The interactions are done using events, messages and stimuli. So overcome the limitations of the object orientation, many patterns and paradigm emerged. But, more recently functional programming is making a come-back, not to replace the object-orientation, but to complement it. _Reactive programming_ is a functional event-driven programming approach tat is used in combination of the regular object-oriented paradigm.
+But... the world in which we are living is asynchronous. The interactions are done using events, messages and stimuli. To overcome the limitations of the object orientation, many patterns and paradigms emerged. But, more recently, functional programming is making a come-back, not to replace the object-orientation, but to complement it. _Reactive programming_ is a functional event-driven programming approach that is used in combination to the regular object-oriented paradigm.
 
-Microsoft created a few years ago a reactive programming framework for .NET called http://reactivex.io/[Reactive eXtensions] (also called ReactiveX or RX). RX is an API for asynchronous programming with **observable streams**. This API has been ported to several languages such as Swift, JavaScript, Python, C++ and Java. 
+A few years ago, Microsoft created a reactive programming framework for .NET called http://reactivex.io/[Reactive eXtensions] (also called ReactiveX or RX). RX is an API for asynchronous programming with **observable streams**. This API has been ported to several languages such as Swift, JavaScript, Python, C++ and Java. 
 
-Let's observe our world for a moment. Observe entities in motion, traffic jams, weather, conversations, financial markets. Things are moving and evolving concurrently. Multiple _things_ happen at the same time, sometimes independently, sometimes in an orchestrated manner. Each objects is creating a _stream_ of events. For instance, your mouse cursor position is moving. The sequence of position is a stream. The number of people in the room, it may be stable, but someone can come in or go out, generating a new value. So we have another stream of values. There is a fundamental mantra behind reactive programming: _events are data and data are events_.
+Let's observe our world for a moment. Observe entities in motion, traffic jams, weather, conversations, financial markets. Things are moving and evolving concurrently. Multiple _things_ happen at the same time, sometimes independently, sometimes in an orchestrated manner. Each object is creating a _stream_ of events. For instance, your mouse cursor position is moving. The sequence of position is a stream. The number of people in the room may be stable, but someone can come in or go out, generating a new value. So we have another stream of values. There is a fundamental mantra behind reactive programming: _events are data and data are events_.
 
-But don't be mistaken, reactive programming is not a silver bullet. Reactive programming and RX let you express business logic in term of streams of events, helping you with concurrency and error recovery; but don't think it's magic... because it's not. RX gives you superpower when dealing with asynchronous scenarios, but it does not come without costs.
+But don't be mistaken, reactive programming is not a silver bullet. Reactive programming and RX let you express business logic in term of streams of events, helping you with concurrency and error recovery; but don't think it's magic... because it's not. RX gives you superpowers when dealing with asynchronous scenarios, but it does not come without costs.
 
 === "Enough philosophy, I wanna see code"
 
@@ -32,7 +32,7 @@ Now open the `src/main/java/me/escoffier/lab/chapter1/Code1.java`:
 include::../../src/main/java/me/escoffier/lab/chapter1/Code1.java[]
 ----
 
-This is your first RX Java application. A couple of points to notice:
+This is your first RX Java application. A couple of points to note:
 
 * `import io.reactivex.*;` imports the classes form RX Java
 * `Observable<String>`: represents a stream of data (here `String`). Notice the class name, it invites you to _observe_ it.
@@ -52,7 +52,7 @@ Captain America
 
 Obviously, feel free to change the list of super heroes. 
 
-A gently note about `subscribe`... If you don't subscribe to a stream, nothing happen. None of the processing stage will be executed until you subscribe on it. This is very important to remember to avoid thousands of hour of debugging!
+A gentle note about `subscribe`... If you don't subscribe to a stream, nothing happens. None of the processing stage will be executed until you subscribe to it. This is very important to remember to avoid thousands of hours of debugging!
 
 === That's all?
 
@@ -63,10 +63,10 @@ Ok, not really impressive... But the true power of RX Java comes from its set of
 include::../../src/main/java/me/escoffier/lab/chapter1/Code2.java[]
 ----
 
-This example use two operators:
+This example uses two operators:
 
 1. `map`: for each item of the observed stream, apply the function - here transform the name to uppercase
-2. `filter`: for each item of the observed stream (the uppercase names), select only names starting with a `A`.
+2. `filter`: for each item of the observed stream (the uppercase names), select only names starting with an `A`.
 
 Run this example, you should see:
 
@@ -89,4 +89,4 @@ It produces  one value per received value, in other words, a sequence of value: 
 
 === Ready to see more
 
-In this chapter, you have seen very basic RX Java 2, there is a lot more... 
+In this chapter, you have seen some very basic RX Java 2, there is a lot more... 
