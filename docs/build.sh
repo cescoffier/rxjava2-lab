@@ -33,7 +33,9 @@ echo "Converting to HTML ..."
 $ASCIIDOCTOR -v "${SHARED_OPTIONS}" "${MASTER_ADOC}"
 
 cp -R images output
-mv chapters/*.png images
+if [[ -f "chapters/*.png" ]]; then 
+    mv chapters/*.png images
+fi    
 mv index.html output
 rm -Rf ./**/.asciidoctor
 
