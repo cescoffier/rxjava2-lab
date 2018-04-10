@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import static me.escoffier.superheroes.Helpers.heroes;
 
-public class Code6 {
+public class Code6_Solution {
 
     public static void main(String[] args) {
         heroes()

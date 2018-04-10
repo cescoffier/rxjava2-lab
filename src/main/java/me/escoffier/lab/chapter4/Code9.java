@@ -1,17 +1,16 @@
 package me.escoffier.lab.chapter4;
 
 
-import me.escoffier.superheroes.SuperStuff;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 
-import static me.escoffier.superheroes.Helpers.villains;
-
-public class Code8 {
+public class Code9 {
 
     public static void main(String[] args) {
-        villains()
-            .map(SuperStuff::getName)
-            .toList()
-            .subscribe(list -> System.out.println("Collected " + list.size() + " names"));
+        String text = "Super heroes and super villains";
+        Single.just(text)
+            .flatMapPublisher(s -> Flowable.fromArray(s.split(" ")))
+            .subscribe(System.out::println);
     }
 
 }

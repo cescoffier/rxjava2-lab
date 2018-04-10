@@ -1,20 +1,188 @@
 == Stream Operators
 
+<<<<<<< HEAD
 We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` method. In this section, we will introduce some more. We can't cover all of them, so we will just explore the most common ones.
+=======
+We have already seen a few operators, such as `map`, `filter`, and the different `doOnX` methods. In this section, we will introduce some more. We can't cover all of them, we just explores the most common ones.
+>>>>>>> Provide chapter 4
 
-=== Filter, First, Take, Skip...
+=== Filter, First, Skip, Take...
 
+<<<<<<< HEAD
 This first set of operators allows us to select the set of items to re-emit from a source.
+=======
+This first set of operators allows you to select the set of item to re-emit from a source.
+>>>>>>> Provide chapter 4
 
-=== Scan
+==== Filter 
 
-=== From observable to single
+`filter` operator accept a predicate checking if the receive item should be forwarded. In `me.escoffier.lab.chapter4.Code1#main`, fill the code to generate a stream containing only villains with _Queen_ in their name.
 
-To list, to sorted list, to Map, collect?
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code1_Solution.java[]
+----
+****
 
-=== Error recovery
+_Note_: On a `Single`, filter allows you to transform it as a `Maybe`.
+
+==== First & Last
+
+On `Observable` and `Flowable`, there are a set of _first_ operators that select the first items from a stream:
+
+* `first(T def)` takes the first item, or emits the given default if the source stream is empty. This method returns a `Single`.
+* `firstElement()` forwards the first item from the observed stream. This method returns a `Maybe` as the observed stream can be empty.
+* `firstOrError()` forwards the first item from the observed stream. If the observed stream is empty, it emits an error
+
+The `last` / `lastElement` / `lastOrError` operators are the mirror operators forwarding only the last items of the stream. 
+
+==== Skip and Take
+
+The `skip` operator creates a stream that skips the first items emitted by the observed stream and emits the remainder. `skip` accepts a number of items, but also provide a time based various skipping all items emitted during a given time window. `skipLast` is the mirror operator trimming the end of the stream. 
+
+The `take` operator creates a stream that emits only the first items emitted by the observed stream. As `skip`, `take` provides a time-based variant and a `takeLast` variant.
+
+Open the `me.escoffier.lab.chapter4.Code2` and edit the code to create a stream containing 10 villains that are from the 21 positions to 31 positions.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code2_Solution.java[]
+----
+****
+
+== Default and Switch
+
+Sometimes, when you realize that your stream is empty, you want to inject some _sensible_ defaults. That's what the `defaultIfEmpty` and `switchIfEmpty` operators are doing.
+
+`me.escoffier.lab.chapter4.Code3` gives an example of `defaultIfEmpty`. It basically inject a default value if the observed stream is empty.
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code3.java[]
+----
+
+`me.escoffier.lab.chapter4.Code4` shows an example of `switchIfEmpty`. Unlike the previous example, `switchIfEmpty` returns a stream, so potentially several elements as in:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code4.java[]
+----
+
+=== Scan and Reduce
+
+Scan and reduce are two very close operators. They both take a seed (there are variants without) and an accumulator function. This function is called with the previous result and the item coming from the observed stream.
+
+The `me.escoffier.lab.chapter4.Code5` illustrates these two operators.
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code5.java[]
+----
+
+Run this example and check the difference. `reduce` is emitting a single value when the observed streams is completed. `scan` emits all computed values, including the seed (0 (seed), 0 + 0, 0 + 1, 1 + 2...).
+
+[source]
+----
+[Scan] Got 0
+[Scan] Got 0
+[Scan] Got 1
+[Scan] Got 3
+[Scan] Got 6
+[Scan] Got 10
+[Scan] Got 15
+[Scan] Got 21
+[Scan] Got 28
+[Scan] Got 36
+[Scan] Got 45
+[Reduce] Got 45
+----
+
+Open the `me.escoffier.lab.chapter4.Code6` and `me.escoffier.lab.chapter4.Code7` and fill the code to use the `scan` and `reduce` methods. You will finally know if super heroes have more superpowers than super villains.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code6_Solution.java[]
+----
+
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code7_Solution.java[]
+----
+****
+
+=== Mapping a stream to a collection and vice-versa
+
+It's often requires to accumulate items from a stream into a collection (only for bounded streams of course) or transforming a collection into a stream.
+
+RX Java provides a set of method to transform a stream into a collection such as `toList` (creating a list of items), `toMap` building a map and to `toMultiMap` building a `Map<K, Collection<V>>`. In the class `me.escoffier.lab.chapter4.Code8` you can see an example of the `toList` operator:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code8.java[]
+----
+
+To transform a collection into a stream, use `Observable.fromIterable` or `Flowable.fromIterable`. `fromArray` is also quite convenient.
 
 === FlatMap
 
+`FlatMap` is **the** operator to understand. `FlatMap` is very powerful but requires a bit more explanation. `FlatMap` takes each item emitted by the observable stream and _map_ it to another stream (this is the _map_ part). Then, it merges the emissions from the returned streams into a single stream (it's the _flat_ part).
+
+The simplest usage of `flatMap` is to produce a stream of items out of a single item. For example, in `me.escoffier.lab.chapter4.Code9` you can see how the `flatMap` operator is used to produce a stream of word
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code9.java[]
+----
+
+You may wonder why the method is named `flatMapPublisher`, it's because by default `flatMap` returns a stream of the same type. So `Single.flatMap` returns a `Single`. Fortunately, the method `flatMapCompletable`, `flatMapMaybe` and `flatMapPublisher` (for `Flowable`) let us transform the type of streams.
+
+`FlatMap` is also used as a composing operator to express a sequential composition. For example chaining two HTTP requests as illustrated in `me.escoffier.lab.chapter4.Code10`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code10.java[]
+----
+
+You can also use `flatMap` to execute a set of request once the first one has completed as illustrated in `me.escoffier.lab.chapter4.Code11`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code11.java[]
+----
+
 === Merge and Zip
 
+RX Java also provides operators to merge streams or to associate items from different streams. 
+
+The `mergeWith` operator merge the current stream with other ones. The produced stream contains all the items from the merged stream in the order of their emissions. If you prefer not mixing the items use `concatWith` but be aware it does not work for unbounded streams.
+
+Open the class `me.escoffier.lab.chapter4.Code12` and fill the code to count the number of super powers.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code12_Solution.java[]
+----
+****
+
+The `zipWith` operator associates items from different streams. It takes the _next_ items emitted by each stream and call a function with all of them. For example, we can use this to generate super heroes vs. super villains battles. Open the `me.escoffier.lab.chapter4.Code13` class and fill the code to generate fights between heroes and villains.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code13_Solution.java[]
+----
+****
+
+=== Conclusion
+
+This chapter introduces a few operators. RX Java 2 is proposing a lot more operators. Check the https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-Observable-Operators[operator list] to see the full list.
+
+Now you have enough knowledge to start building a RX Java API.

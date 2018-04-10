@@ -45,7 +45,7 @@ public class Scraper {
 
         Flowable.fromIterable(names.entrySet())
             .flatMapSingle(entry -> scrap(client, entry.getKey(), "https://www.superherodb.com" + entry.getValue()))
-            .doOnNext(entity -> System.out.println("Retrieved " + entity + " (" + counter.incrementAndGet() + " / " +
+            .doOnNext(superStuff -> System.out.println("Retrieved " + superStuff + " (" + counter.incrementAndGet() + " / " +
                 names.size() + ")"))
             .toList()
             .flatMapCompletable(list -> vertx.fileSystem()
@@ -63,7 +63,7 @@ public class Scraper {
             || name.contains("Superhero species and types");
     }
 
-    private static Single<Entity> scrap(WebClient client, String name, String url) {
+    private static Single<SuperStuff> scrap(WebClient client, String name, String url) {
         return client.getAbs(url)
             .rxSend()
             .map(HttpResponse::bodyAsString)
@@ -73,7 +73,7 @@ public class Scraper {
                 Elements powers = document.select("ul a[href^='/powers/']");
                 List<String> list = powers.stream().skip(1).map(Element::text).collect(Collectors.toList());
                 boolean isHero = ! isVillain(document);
-                return new Entity(name, list, isHero);
+                return new SuperStuff(name, list, isHero);
             });
     }
 

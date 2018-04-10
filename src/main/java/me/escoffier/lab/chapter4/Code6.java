@@ -1,18 +1,16 @@
 package me.escoffier.lab.chapter4;
 
 
-import java.util.HashSet;
-
 import static me.escoffier.superheroes.Helpers.heroes;
 
-public class Code5 {
+public class Code6 {
 
     public static void main(String[] args) {
         heroes()
-            .scan(new HashSet<>(), (set, superstuff) -> {
-                set.addAll(superstuff.getSuperpowers());
-                return set;
-            })
+            // Build a set containing all the super power from the heroes
+            // This exercise uses the `scan` method
+
+            
             .doOnNext(System.out::println)
             .count()
             .subscribe(

@@ -1,19 +1,17 @@
 package me.escoffier.lab.chapter4;
 
 
-import java.util.HashSet;
+import me.escoffier.superheroes.SuperStuff;
 
-import static me.escoffier.superheroes.Helpers.heroes;
 import static me.escoffier.superheroes.Helpers.villains;
 
-public class Code7 {
+public class Code8 {
 
     public static void main(String[] args) {
         villains()
-            // Build a set containing all the super power from the villain
-            // This exercise uses the `reduce` method
-            
-        ;
+            .map(SuperStuff::getName)
+            .toList()
+            .subscribe(list -> System.out.println("Collected " + list.size() + " names"));
     }
 
 }

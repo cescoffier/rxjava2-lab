@@ -10,7 +10,7 @@ import me.escoffier.superheroes.SuperStuff;
 
 import static me.escoffier.superheroes.Helpers.client;
 
-public class Code13 {
+public class Code13_Solution {
 
     public static void main(String[] args) {
         SuperHeroesService.run();

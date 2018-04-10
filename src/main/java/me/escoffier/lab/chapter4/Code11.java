@@ -9,7 +9,7 @@ import me.escoffier.superheroes.SuperHeroesService;
 
 import static me.escoffier.superheroes.Helpers.client;
 
-public class Code10 {
+public class Code11 {
 
     public static void main(String[] args) {
         SuperHeroesService.run();
@@ -29,7 +29,7 @@ public class Code10 {
             .firstOrError()
 
             // Second request
-            .flatMap(Code10::getHero)
+            .flatMap(Code11::getHero)
 
             // Print the result
             .subscribe(json -> System.out.println(json.encodePrettily()));

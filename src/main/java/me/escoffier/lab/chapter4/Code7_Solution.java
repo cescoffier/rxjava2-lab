@@ -3,10 +3,9 @@ package me.escoffier.lab.chapter4;
 
 import java.util.HashSet;
 
-import static me.escoffier.superheroes.Helpers.heroes;
 import static me.escoffier.superheroes.Helpers.villains;
 
-public class Code7 {
+public class Code7_Solution {
 
     public static void main(String[] args) {
         villains()

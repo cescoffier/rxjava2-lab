@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Entity {
+public class SuperStuff {
 
     private final static AtomicInteger ID = new AtomicInteger();
 
@@ -21,18 +21,18 @@ public class Entity {
 
     private int id;
 
-    public Entity(String name, List<String> list, boolean isHeroes) {
+    public SuperStuff(String name, List<String> list, boolean isHeroes) {
         this(ID.getAndIncrement(), name, list, isHeroes);
     }
 
-    public Entity(int id, String name, List<String> list, boolean isHeroes) {
+    public SuperStuff(int id, String name, List<String> list, boolean isHeroes) {
         this.id = id;
         this.name = name;
         this.superpowers.addAll(list);
         this.villain = !isHeroes;
     }
 
-    public Entity() {
+    public SuperStuff() {
         // Used by mapper.
     }
 
@@ -81,7 +81,7 @@ public class Entity {
             .put("villain", villain);
     }
 
-    public Entity(JsonObject json) {
+    public SuperStuff(JsonObject json) {
         this.id = json.getInteger("id");
         this.name = json.getString("name");
         this.villain = json.getBoolean("villain");

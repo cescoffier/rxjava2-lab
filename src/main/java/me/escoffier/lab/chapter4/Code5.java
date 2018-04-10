@@ -1,23 +1,22 @@
 package me.escoffier.lab.chapter4;
 
 
+import io.reactivex.Flowable;
+
 import java.util.HashSet;
 
 import static me.escoffier.superheroes.Helpers.heroes;
 
-public class Code6 {
+public class Code5 {
 
     public static void main(String[] args) {
-        heroes()
-            .scan(new HashSet<>(), (set, superstuff) -> {
-                set.addAll(superstuff.getSuperpowers());
-                return set;
-            })
-            .doOnNext(System.out::println)
-            .count()
-            .subscribe(
-                number -> System.out.println("Heroes have " + number + " unique super powers")
-            );
+        Flowable.range(0, 10)
+            .scan(0, (last_result, item) -> last_result + item)
+            .subscribe(i -> System.out.println("[Scan] Got " + i));
+
+        Flowable.range(0, 10)
+            .reduce(0, (last_result, item) -> last_result + item)
+            .subscribe(i -> System.out.println("[Reduce] Got " + i));
     }
 
 }
