@@ -1,4 +1,4 @@
-<meta name="keywords" content="Vert.x, Hands-on, Lab, Tutorial, Workshop, RX Java, Reactive, Reactive eXtensions">
+<meta name="keywords" content="RX Java, Vert.x, Hands-on, Lab, Tutorial, Workshop, RX Java 2, Reactive, Reactive eXtensions">
 <meta name="description" content="A hand's on lab about RxJava 2">
 
 
@@ -6,11 +6,18 @@
 <link href="assets/css/bootstrap.css" media="screen" rel="stylesheet">
 <link href="assets/css/font-awesome.min.css" media="screen" rel="stylesheet">
 <link href="assets/css/hol.css" media="screen" rel="stylesheet">
+<link href="assets/css/github.css" media="screen" rel="stylesheet">
 <script src="assets/js/jquery-3.1.1.js"></script>
 <script src="assets/js/bootstrap.js"></script>
+<!-- be aware that only a few languages have been included-->
+<script src="assets/js/highlight.pack.js"></script>
 
 <script>
     $(document).ready(function() {
+        hljs.initHighlightingOnLoad();
+        $('pre.highlight code').each(function(i, block) {
+            hljs.highlightBlock(block);
+        });
         $(document)
             .find("div.assignment")
             .each(function(index, elt) {

@@ -6,6 +6,7 @@ v0.1, April, 6th, 2018
 :imagesdir: images
 :docinfo1:
 :icons: font
+:sectnums:
 
 include::chapters/0-introduction.adoc[Introduction]
 
@@ -21,7 +22,7 @@ include::chapters/5-creating_a_rx_api.adoc[Creating a library with RX]
 
 include::chapters/6-schedulers.adoc[Schedulers and concurrency]
 
-include::chapters/7-transformation_and_custom_operators.adoc[Transformation and Custom Operators]
+// include::chapters/7-transformation_and_custom_operators.adoc[Transformation and Custom Operators]
 
 include::chapters/8-testing.adoc[Testing]
 
