@@ -1,6 +1,6 @@
-= Observables and Subscribers
+== Observables and Subscribers
 
-== Anatomy of a stream
+=== Anatomy of a stream
 
 What's a _stream_. A stream is a sequence of data, potentially unbounded. This data may be known or unknown when the stream is created. We will see later that some special streams emit a single item, and some none at all. Streams are asynchronous constructs. When you observe a stream, you don't know when data is going to be emitted.
 
@@ -76,7 +76,7 @@ include::../../src/main/java/me/escoffier/lab/chapter2/Code3_Solution.java[]
 
 In this example the stream is created with the method `just` taking the list of items as parameter.
 
-== Creating more dynamic streams
+=== Creating more dynamic streams
 
 So far we always used a stream with a fixed collection of values. Of course, items emitted by streams may be unknown at creation time. But let's see how streams works first.
 
@@ -119,11 +119,11 @@ BOOM
 not received anymore
 ----
 
-== Hot vs. Cold streams
+=== Hot vs. Cold streams
 
 Things are becoming a bit more subtle... This is a key concept to grasp before going further. Streams can be _cold_ or _hot_ (like coffee). 
 
-=== Cold streams
+==== Cold streams
 
 A cold stream restarts from the beginning for each subscriber, and every subscriber gets the full set of items. For instance, let's have a look at the following code:
 
@@ -148,7 +148,7 @@ When running this application (`me.escoffier.lab.chapter2.Code7`) you get:
 
 As you can see, both subscribers get the full set of items. 
 
-=== Hot streams
+==== Hot streams
 
 Unlike cold streams, hot streams broadcast the same items to all listening subscribers. However, if a subscriber arrives later, it won't receive the previous items. Logically, hot streams represent _events_ or _facts_ rather than known finite data sets.
 
@@ -179,7 +179,7 @@ The first subscriber (A) received the values 0, 1, 2, 3 and 4. The second subscr
 
 There are ways to transform cold stream into hot stream named `ConnectableObservable`. We won't cover these in this lab, but we invite you to check the https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators[documentation].
 
-=== Stopping emissions
+==== Stopping emissions
 
 Cleanup is always a good thing. In the previous example, we had 2 subscribers. Let's reuse this example, but this time _cancel the subscription_ after some time. 
 
@@ -192,7 +192,7 @@ include::../../src/main/java/me/escoffier/lab/chapter2/Code9.java[]
 
 Once cancelled, the subscriber does not receive any event anymore. It does not get a completion event either.
 
-== Streams, streams, streams...
+=== Streams, streams, streams...
 
 In this chapter we have seen how streams are structured, how they behave and how observers/subscribers work. We have only seen streams containing a set of data. In the next chapter we will see some more special streams.
 
