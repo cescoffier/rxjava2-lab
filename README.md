@@ -2,6 +2,8 @@
 
 This repository is a lab about RX Java 2 and how to build RX Java API.
 
+The instructions are available on http://escoffier.me/rxjava-hol/.
+
 ## Teasing
 
 Reactive programing combines functional programming and data streams. In other words it's a bit fuzzy...
