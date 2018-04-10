@@ -26,13 +26,11 @@ mkdir -p output
 SHARED_OPTIONS='-a toc=left -a stylesheet! -a numbered -a experimental -a source-highlighter=prettify -r asciidoctor-diagram -a imagesdir=images
 --destination-dir=output'
 
-cp -R images output
 cp -R assets output
 
 echo "Converting to HTML ..."
 $ASCIIDOCTOR -v "${SHARED_OPTIONS}" "${MASTER_ADOC}"
 
-cp -R images output
 if [[ -f "chapters/*.png" ]]; then 
     mv chapters/*.png images
 fi    
