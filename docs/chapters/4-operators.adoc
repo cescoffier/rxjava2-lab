@@ -8,7 +8,7 @@ This first set of operators allows us to select the set of items to re-emit from
 
 ==== Filter 
 
-`filter` operator accept a predicate checking if the receive item should be forwarded. In `me.escoffier.lab.chapter4.Code1#main`, fill the code to generate a stream containing only villains with _Queen_ in their name.
+The `filter` operator accepts a predicate checking if the received item should be forwarded. In `me.escoffier.lab.chapter4.Code1#main`, fill in the code to generate a stream containing only villains with _Queen_ in their name.
 
 [.assignment]
 ****
@@ -32,9 +32,9 @@ The `last` / `lastElement` / `lastOrError` operators are the mirror operators fo
 
 ==== Skip and Take
 
-The `skip` operator creates a stream that skips the first items emitted by the observed stream and emits the remainder. `skip` accepts a number of items, but also provide a time based various skipping all items emitted during a given time window. `skipLast` is the mirror operator trimming the end of the stream. 
+The `skip` operator creates a stream that skips the first items emitted by the observed stream and emits the remainder. `skip` accepts a number of items, but also provides a time based variant skipping all items emitted during a given time window. `skipLast` is the mirror operator trimming the end of the stream. 
 
-The `take` operator creates a stream that emits only the first items emitted by the observed stream. As `skip`, `take` provides a time-based variant and a `takeLast` variant.
+The `take` operator creates a stream which emits only the first items emitted by the observed stream. As `skip`, `take` provides a time-based variant and a `takeLast` variant.
 
 Open the `me.escoffier.lab.chapter4.Code2` and edit the code to create a stream containing 10 villains that are from the 21 positions to 31 positions.
 
@@ -50,7 +50,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code2_Solution.java[]
 
 Sometimes, when you realize that your stream is empty, you want to inject some _sensible_ defaults. That's what the `defaultIfEmpty` and `switchIfEmpty` operators are doing.
 
-`me.escoffier.lab.chapter4.Code3` gives an example of `defaultIfEmpty`. It basically inject a default value if the observed stream is empty.
+`me.escoffier.lab.chapter4.Code3` gives an example of `defaultIfEmpty`. It basically injects a default value if the observed stream is empty.
 
 [source, java]
 ----
@@ -109,9 +109,9 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code7_Solution.java[]
 
 === Mapping a stream to a collection and vice-versa
 
-It's often requires to accumulate items from a stream into a collection (only for bounded streams of course) or transforming a collection into a stream.
+It's often required to accumulate items from a stream into a collection (only for bounded streams of course) or transforming a collection into a stream.
 
-RX Java provides a set of method to transform a stream into a collection such as `toList` (creating a list of items), `toMap` building a map and to `toMultiMap` building a `Map<K, Collection<V>>`. In the class `me.escoffier.lab.chapter4.Code8` you can see an example of the `toList` operator:
+RX Java provides a set of methods to transform a stream into a collection such as `toList` (creating a list of items), `toMap` building a map and to `toMultiMap` building a `Map<K, Collection<V>>`. In the class `me.escoffier.lab.chapter4.Code8` you can see an example of the `toList` operator:
 
 [source, java]
 ----
@@ -122,9 +122,9 @@ To transform a collection into a stream, use `Observable.fromIterable` or `Flowa
 
 === FlatMap
 
-`FlatMap` is **the** operator to understand. `FlatMap` is very powerful but requires a bit more explanation. `FlatMap` takes each item emitted by the observable stream and _map_ it to another stream (this is the _map_ part). Then, it merges the emissions from the returned streams into a single stream (it's the _flat_ part).
+`FlatMap` is **the** operator to understand. `FlatMap` is very powerful but requires a bit more explanation. `FlatMap` takes each item emitted by the observable stream and _maps_ it to another stream (this is the _map_ part). Then, it merges the emissions from the returned streams into a single stream (it's the _flat_ part).
 
-The simplest usage of `flatMap` is to produce a stream of items out of a single item. For example, in `me.escoffier.lab.chapter4.Code9` you can see how the `flatMap` operator is used to produce a stream of word
+The simplest usage of `flatMap` is to produce a stream of items out of a single item. For example, in `me.escoffier.lab.chapter4.Code9` you can see how the `flatMap` operator is used to produce a stream of words:
 
 [source, java]
 ----
@@ -151,7 +151,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code11.java[]
 
 RX Java also provides operators to merge streams or to associate items from different streams. 
 
-The `mergeWith` operator merge the current stream with other ones. The produced stream contains all the items from the merged stream in the order of their emissions. If you prefer not mixing the items use `concatWith` but be aware it does not work for unbounded streams.
+The `mergeWith` operator merges the current stream with other ones. The produced stream contains all the items from the merged streams in the order of their emissions. If you prefer not mixing the items use `concatWith` but be aware it does not work for unbounded streams.
 
 Open the class `me.escoffier.lab.chapter4.Code12` and fill the code to count the number of super powers.
 
@@ -163,7 +163,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code12_Solution.java[]
 ----
 ****
 
-The `zipWith` operator associates items from different streams. It takes the _next_ items emitted by each stream and call a function with all of them. For example, we can use this to generate super heroes vs. super villains battles. Open the `me.escoffier.lab.chapter4.Code13` class and fill the code to generate fights between heroes and villains.
+The `zipWith` operator associates items from different streams. It takes the _next_ items emitted by each stream and calls a function with all of them. For example, we can use this to generate super heroes vs. super villains battles. Open the `me.escoffier.lab.chapter4.Code13` class and fill the code to generate fights between heroes and villains.
 
 [.assignment]
 ****
@@ -175,6 +175,6 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code13_Solution.java[]
 
 === Conclusion
 
-This chapter introduces a few operators. RX Java 2 is proposing a lot more operators. Check the https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-Observable-Operators[operator list] to see the full list.
+This chapter introduced a few operators. RX Java 2 is proposing a lot more operators. Check the https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-Observable-Operators[operator list] to see the full list.
 
 Now you have enough knowledge to start building a RX Java API.
