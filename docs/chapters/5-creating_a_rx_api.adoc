@@ -1,7 +1,211 @@
 == How to create a RX API
 
-- Take an existing blocking API
-- Schedule every operation in a thread pool
-- Notify listener when done
-- Claim it is reactive!
- 
+Now that you are experts in RX, let's see how you can create an RX API for your users.
+
+=== Porting blocking code to RX
+
+Most of the time you will have legacy code that is blocking and which you need to port to
+reactive programming. Often, the hard part will be to simply avoid blocking, so let's see
+a simple strategy for that. 
+
+==== Example blocking call
+
+Let's start with an example of a legacy blocking API that takes one second to complete: 
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code1.java[]
+----
+
+_Note_: Here we're faking an expensive blocking operation by sleeping, but most of the time
+those blocking calls will wait for IO or for expensive computations.
+
+==== When you have a non-blocking alternative
+
+Sometimes it's easy to replace blocking code by non-blocking code. Either you can use another
+library that is non-blocking, if the blocking code is not yours, or you can find support in RX,
+like in our example, because RX has support for delaying code: 
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code2.java[]
+----
+
+_Note_: OK you've caught me: we've actually ported a call to `sleep` that faked an expensive
+code into code that waits for one second with `delay` but couldn't possibly do anything else by wait, so
+it's really an edgy example.
+
+If you run this code, you will notice that we're not actually getting notified, so what happened?
+
+==== Side-note about who executes what
+
+In the next chapter we will cover `Schedulers` in detail, but we have to explain what happened in the
+last code sample.
+
+What happened was that we created a `Single` with a `delay` which is supposed to be emitted later
+in the future, and we subscribed to it, but remember that all that is non-blocking. So RX planned for
+our `Single` to emit in the future, and returned to the caller thread which called the main thread.
+And then we returned from the main thread, so the JVM shut down.
+
+In most cases your code will not run from the main thread and the JVM will not terminate when your
+function is called, like in most backend servers. So in order to emulate the JVM not terminating
+there are several ways to make it wait for the RX subscriber to be done, like sleeping longer.
+
+Just comment out the sleeping code and run the example.
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code2.java[]
+----
+
+Now it works and we've created our first async API.
+
+For the sake of completeness, let us list several preferrable options for blocking the main thread,
+such as using a `CountDownLatch`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code3.java[]
+----
+
+Or even — the irony — blocking by transforming our `Single` into a JDK `Future` and blocking
+on it:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code4.java[]
+----
+
+Or simply by calling the `Single.blockingGet` method:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code5.java[]
+----
+
+==== When you have no choice but to use a thread
+
+Sometimes you just have to use blocking APIs, even though you want to expose an RX API
+which can't block the current thread. In this case you can offload your blocking calls
+to a new thread, or a thread pool, or a special scheduler, whatever you want.
+
+This can be done by using `Single.create` which provides you with a `SingleEmitter`
+object you can call to notify the `Single` when you have your item (by calling `onSuccess`),
+or an exception (by calling `onError`).
+
+Open the `me.escoffier.lab.chapter5.Code6` class and fill in the blocking code we had
+in the `Code1` example that we could not port:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code6_Solution.java[]
+----
+****
+
+=== Intricacies of RX APIs
+
+Let us now see some common pitfalls of writing an RX API and how to avoid them.
+
+==== APIs that need clean-up
+
+Some objects require a manual clean-up after they're not used anymore. Closing sockets,
+freeing buffers, returning pooled objects, there are many examples of resources that
+need to be cleaned up.
+
+When you need to do clean-up after an `Observable` is finished, you can use the `doFinally()`
+method which is called in any completion case (success or exception).
+
+Open the `me.escoffier.lab.chapter5.Code7` class and add the `doFinally` call that
+cleans-up the directory stream:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code7_Solution.java[]
+----
+****
+
+==== Operation per subscriber
+
+In our previous example, we inadvertently tripped on a common RX user mistake of doing the heavy
+work before returning the `Observable`, which means that the caller of `operationWithCleanup`
+will pay the cost even if nobody ever subscribes to the returned `Observable`. This can be acceptable
+in some cases, but in most cases you will want the operations to only be done when someone subscribes
+to the `Observable`.
+
+There is another reason to want to do operations for a subscriber, which is that it makes the `Observable`
+re-usable for more than one subscriber.
+
+Witness what happens if you subscribe more than once to iterate the files by editing the 
+`me.escoffier.lab.chapter5.Code8` class to iterate twice:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code8_Solution.java[]
+----
+****
+
+If you run it, you will run into this output:
+
+```
+File: ./.classpath
+File: ./.project
+File: ./target
+File: ./.gitignore
+File: ./.settings
+File: ./.git
+File: ./.vertx
+File: ./LICENSE
+File: ./README.md
+File: ./src
+File: ./docs
+File: ./pom.xml
+java.lang.IllegalStateException: Directory stream is closed
+    at sun.nio.fs.UnixDirectoryStream.iterator(UnixDirectoryStream.java:114)
+    at sun.nio.fs.UnixSecureDirectoryStream.iterator(UnixSecureDirectoryStream.java:73)
+    at io.reactivex.internal.operators.observable.ObservableFromIterable.subscribeActual(ObservableFromIterable.java:35)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.internal.operators.observable.ObservableMap.subscribeActual(ObservableMap.java:33)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.internal.operators.observable.ObservableDoFinally.subscribeActual(ObservableDoFinally.java:45)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.Observable.subscribe(Observable.java:11991)
+    at io.reactivex.Observable.subscribe(Observable.java:11920)
+    at me.escoffier.lab.chapter5.Code7_Solution.main(Code7_Solution.java:30)
+```
+
+This is because we ran the clean-up operation after the first iteration, but we cleaned up
+an instance of the directory stream that is shared across every subscriber.
+
+Edit the `me.escoffier.lab.chapter5.Code9` class to use an `emitter` to allocate
+and clean up the directory stream for every subscriber:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code9_Solution.java[]
+----
+****
+
+==== Forcing a resource to be consumed
+
+As we've seen previously, in most cases we want to return an RX type that will execute its
+operation for every subscriber. In some cases, though, you will have to write an API that
+forces you to allocate resources that _have_ to be consumed (to avoid leaks) before you
+can return an RX type. Or sometimes you want to create an `Observable` that can only
+be subscribed to once.
+
+In cases like these, if you return the RX type, the user can choose to never subscribe,
+or subscribe more than once. In order to force the user to consume the resource, you can
+turn things around and require the user to provide you with a `Consumer` instead:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code10.java[]
+----
