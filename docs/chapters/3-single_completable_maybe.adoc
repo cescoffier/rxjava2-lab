@@ -209,7 +209,7 @@ What we can see here is that the source emits a set of items (128) and then, 96 
 
 Notice that RX Java 2 provides some other back pressure strategies such as using buffers, or dropping data. Check the https://github.com/ReactiveX/RxJava/wiki/Backpressure-(2.0)[documentation] for further details on these strategies.
 
-== Conclusion
+=== Conclusion
 
 In this chapter we have seen a few different specialized streams to handle various situations. The following table summarizes when to use what:
 

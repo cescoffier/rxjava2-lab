@@ -46,7 +46,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code2_Solution.java[]
 ----
 ****
 
-== Default and Switch
+=== Default and Switch
 
 Sometimes, when you realize that your stream is empty, you want to inject some _sensible_ defaults. That's what the `defaultIfEmpty` and `switchIfEmpty` operators are doing.
 
