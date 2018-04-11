@@ -2,6 +2,74 @@
 
 Now that you are experts in RX, let's see how you can create an RX API for your users.
 
+=== Mapping async APIs
+
+If you're lucky and your API is already using RX types in its implementation, then writing
+and RX API is usually easy, because it's a matter of using all the techniques we showed in
+the previous chapters to match the flows to what you want to expose.
+
+==== Reading a file with an RX implementation
+
+In this example, we will show you how to read a file using the Vert.x FileSystem RX API. Here
+we want to expose reading of a file directly into text: 
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code01.java[]
+----
+
+As you can see it's just a matter of building the right pipeline to get the file content
+and transform it into text.
+
+==== Reading a file with a non-RX async implementation
+
+In many cases, you will be interacting with non-RX implementations that have their own
+async variant. Take `AsynchronousFileChannel` from the JDK, for example: they
+allow you to read a file asynchronously, and require a listener from you, which will
+be notified on success or failure. In this case you have to bridge this async API with
+RX, so you do that by using `Single.create` which will give you an `Emitter`
+object that you use to push notifications into the `Single` you're creating: 
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code01b.java[]
+----
+
+As you can see it's a little bit more complex because you have to deal with completion
+and errors yourself.
+
+==== Squares and circles: adapting the pipelines
+
+Quite often you will find that the RX API you're using internally doesn't quite match
+the RX API you want to expose.
+
+For example, if we want to build an API that exposes a `Flowable` of super-heroes
+using the Vert.x `FileSystem` we are going to read the file, which gives us a
+`Single<Buffer>` and we want to end up with a `Flowable<SuperStuff>` so
+we are going to have to adapt our pipeline to spread the single result into a stream,
+and this is usually done with the variant of `flatMap` which is `flatMapFlowable`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code02.java[]
+----
+
+==== Reading values from an RX API
+
+If you require the user to give you RX values in your API, you can just accept the right
+RX type as parameter. Let's take the previous example and allow the user to provide the
+super-hero file name as parameter. 
+
+Open the `me.escoffier.lab.chapter5.Code03` class and fill in missing code:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code03_Solution.java[]
+----
+****
+
 === Porting blocking code to RX
 
 Most of the time you will have legacy code that is blocking and which you need to port to
