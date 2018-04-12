@@ -8,7 +8,7 @@ import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.core.file.FileSystem;
 import me.escoffier.superheroes.SuperStuff;
 
-public class Code03_Solution {
+public class Code5_Solution {
 
 	static Flowable<SuperStuff> getHeroesFromFile(Single<String> file) {
 		Vertx vertx = Vertx.vertx();

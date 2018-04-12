@@ -11,21 +11,17 @@ import io.reactivex.Observable;
 public class Code8 {
 
 	static Observable<String> operationWithCleanup() {
-		DirectoryStream<Path> stream;
-		try {
-			stream = Files.newDirectoryStream(new File(".").toPath());
-		} catch (IOException e) {
-			return Observable.error(e);
-		}
-		return Observable.fromIterable(stream)
-				.map(path -> path.toString())
-				.doFinally(() -> stream.close());
+		return Observable.create(emitter -> {
+			// emit the directory stream here
+		}).map(path -> path.toString());
 	}
 	
 	
 
     public static void main(String[] args) throws InterruptedException {
     	Observable<String> files = operationWithCleanup();
+    	files.subscribe(value -> System.out.println("File: "+value),
+    			x -> x.printStackTrace());
     	files.subscribe(value -> System.out.println("File: "+value),
     			x -> x.printStackTrace());
     }

@@ -28,5 +28,7 @@ public class Code7_Solution {
     	Observable<String> files = operationWithCleanup();
     	files.subscribe(value -> System.out.println("File: "+value),
     			x -> x.printStackTrace());
+    	files.subscribe(value -> System.out.println("File: "+value),
+    			x -> x.printStackTrace());
     }
 }

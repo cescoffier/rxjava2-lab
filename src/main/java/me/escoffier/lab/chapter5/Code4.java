@@ -1,25 +1,28 @@
 package me.escoffier.lab.chapter5;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.Single;
+import io.reactivex.Flowable;
+import io.vertx.core.json.JsonObject;
+import io.vertx.reactivex.core.Vertx;
+import io.vertx.reactivex.core.buffer.Buffer;
+import io.vertx.reactivex.core.file.FileSystem;
+import me.escoffier.superheroes.SuperStuff;
 
 public class Code4 {
 
-	static Single<Integer> blockingOperation() {
-		System.out.println("Operation starting");
-		return Single.just(42)
-				.delay(1, TimeUnit.SECONDS)
-				.doAfterTerminate(() -> System.out.println("Operation done"));
+	static Flowable<SuperStuff> getHeroes() {
+		Vertx vertx = Vertx.vertx();
+		FileSystem fileSystem = vertx.fileSystem();
+        return fileSystem.rxReadFile("src/main/resources/entities.json")
+                .map(Buffer::toJsonArray)
+                .flatMapPublisher(Flowable::fromIterable)
+                .cast(JsonObject.class)
+                .map(j -> j.mapTo(SuperStuff.class))
+                .filter(s -> ! s.isVillain());
 	}
 	
 	
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-		System.out.println("Before operation");
-    	Integer result = blockingOperation()
-    	.toFuture().get();
-		System.out.println("After operation: "+result);
+    public static void main(String[] args) {
+    	getHeroes().subscribe(System.out::println, Throwable::printStackTrace);
     }
 }

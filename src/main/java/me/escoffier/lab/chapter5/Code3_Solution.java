@@ -10,18 +10,18 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import io.reactivex.Observable;
 
-public class Code3 {
+public class Code3_Solution {
 
 	static Observable<File> getAllFiles() {
 		return Observable.create(emitter -> {
 			Files.walkFileTree(new File(".").toPath(), new SimpleFileVisitor<Path>() {
 				@Override
 				public FileVisitResult visitFile(Path path, BasicFileAttributes attr) throws IOException {
-					// ...
+					emitter.onNext(path.toFile());
 					return FileVisitResult.CONTINUE;
 				}
 			});
-			// ...
+			emitter.onComplete();
 		});
 	}
 
