@@ -6,7 +6,7 @@ The instructions are available on http://escoffier.me/rxjava-hol/.
 
 ## Teasing
 
-Reactive programing combines functional programming and data streams.
+Reactive programming combines functional programming and data streams.
 In other words it's a bit fuzzy...
 
 RX Java 2 is a library implementing the reactive programing paradigm.
