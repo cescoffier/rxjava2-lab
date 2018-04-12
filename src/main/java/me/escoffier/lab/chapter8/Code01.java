@@ -13,6 +13,7 @@ public class Code01 {
         testObserver
                 .assertSubscribed()
                 .assertNever(n -> n % 2 == 1)
+                .assertComplete()
                 .assertValueCount(5)
                 .assertValues(2, 4, 6, 8, 10);
     }

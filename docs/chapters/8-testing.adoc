@@ -1,1 +1,122 @@
 == Testing all the things
+
+So far we've built pipelines for processing data and events, and we've run them all from a traditional Java `main` method.
+Of course you know that unit and integration testing are key ingredients to building sustainable software projects, and it is now time to turn to the test facilities provided by RX Java.
+
+=== Testing streams
+
+RX Java pipelines provide a special operator called `test()` that returns instances of `io.reactivex.observers.TestObserver`.
+As the name suggests, a `TestObserver` provides support for checking what an observable does.
+
+Here is an example:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter8/Code01.java[]
+----
+
+The observable produces the even numbers between 1 and 10.
+Once we have a `TestObserver` we can perform different kinds of assertions, like:
+
+* that the observer has subscribed,
+* that no emitted number is odd,
+* that the completion event was sent,
+* that there are 5 emitted values,
+* that those values are (in order) 2, 4, 6, 8 and 10.
+
+=== Testing back-pressured streams
+
+The case of `Flowable` is a little bit different, as event emission is driven by subscribers rather than the producer.
+
+There is also a `test` method, albeit we can pass the number of items to be emitted initially, and it returns a `TestSubscriber` rather than a `TestObserver`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter8/Code02.java[]
+----
+
+The `requestMore(n)` method allows requesting further elements.
+This is interesting, as we can test what the stream emits in a step-by-step fashion: here we request 2 items, check the currently emitted values and that the completion hasn't been done yet, then request 3 further items and check completion.
+
+We can also see in this example that we can test what happens when a subscription is being cancelled at a very precise point in time, here after 2 events.
+With non-backpressured streams this would be harder to do since a `TestObserver` cannot control when emissions happen.
+
+=== Testing errors
+
+Of course things do not always go according to the plan, and stream processing ends with an error.
+
+For all types of streams, we can check the error type, and also perform ad-hoc assertions on the resulting throwable object:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter8/Code03.java[]
+----
+
+=== Taking control of the clock
+
+Some streams are time-sensitive, as they emit events with delays or an interval-based pace.
+All of these streams need a scheduler to offload work for a later point in time.
+
+You could think of putting threads to sleep and wait for timing events to happen, but this is error-prone (indeterminism) and it slows test execution dramatically.
+
+A better solution is to use `io.reactivex.schedulers.TestScheduler`, a scheduler designed for testing.
+The good thing with `TestScheduler` is that you are the master of time, and you advance it manually.
+
+Here is an example where 2 `Single` are being zipped, producing a string value about 1 second from the subscription:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter8/Code04.java[]
+----
+
+Here we make a first time advance at 500ms, and we check that no value has been emitted yet.
+Adding a further 600ms, we check that a value was emitted.
+
+It is interesting to note that this test actually completes fast as time is not clock time.
+
+=== When you cannot control the clock
+
+Of course it is not always possible to control the clock with a `TestScheduler`.
+A good example is I/O operations: we can't guarantee latency and we often use timeouts.
+In such cases we need to let the test run on clock time.
+
+The following example produces string values every 500ms:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter8/Code05.java[]
+----
+
+Since this is best-effort scheduling going on, we don't have strong guarantees on the exact timing of events, so one way to work is to wait for a bit more than the expected duration.
+Indeed, emissions are from another thread because of the `ticks` stream.
+
+The `awaitTerminalEvent` allows waiting for a completion or error to happen.
+If awaiting exceeds the duration, then it returns false and we know that we have a timeout.
+It is possible to use other `await...` methods, like waiting only for completion, or for a number of events.
+
+This is a much better approach than using a `Thread.sleep(t)`...
+
+=== Putting it all together in JUnit
+
+We are going to test a HTTP request to a third-party service that returns 520 super heroes.
+This is all encapsulated in the `me.escoffier.superheroes.Helpers` class.
+
+A naive way to test is to assume traditional synchronous semantics and _just_ observe what the stream emits:
+
+[source, java]
+----
+include::../../src/test/java/me/escoffier/lab/chapter8/BadAsyncTest.java[]
+----
+
+1. What happens when you run the test?
+2. Why is uncommenting the `Thread.sleep(5000)` statement a fix, albeit a dirty fix?
+
+Using your knowledge of `TestSubscriber`, rewrite the test with the RX Java testing goodies in a cleaner fashion:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/test/java/me/escoffier/lab/chapter8/AsyncTest_Solution.java[]
+----
+****
