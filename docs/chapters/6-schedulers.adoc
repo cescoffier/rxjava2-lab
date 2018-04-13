@@ -236,21 +236,23 @@ instead of the _main_ thread thanks to the `observeOn` operation.
 
 ==== Schedulers
 
-There are different predefined schedulers by RxJava
+In the examples we have used a scheduler backed by a fixed thread pool created from a Java executor.
+
+There are different predefined schedulers by RxJava you can use too
 
 - _Computation_ scheduler for computational work such as event-loops and callback processing
 - _IO_ scheduler for IO bound operations
 - _new Thread_ creates a new thread for each task
 - _immediate_ run the task immediately
 
-In addition if you Vert.x, it provides also schedulers as well to execute operations within Vert.x thread pools.
+In addition if you are using Vert.x, it provides also schedulers as well to execute operations within Vert.x thread pools.
 
 === Schedulers in practice
 
 Now let's see a few examples where we can directly apply schedulers to control the concurrency of
 our API.
 
-todo.
+
 
 === Document your concurrency
 

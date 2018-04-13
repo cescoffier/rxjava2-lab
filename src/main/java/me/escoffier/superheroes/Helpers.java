@@ -83,7 +83,7 @@ public class Helpers {
         START_TIME.compareAndSet(0, now);
         long elapsed = now - START_TIME.get();
         String name = Thread.currentThread().getName();
-        System.out.format("%2$-4s %1$-12s    %3$s\n", name, elapsed, msg);
+        System.out.format("%2$-4s %1$-26s    %3$s\n", name, elapsed, msg);
     }
 
     private static final AtomicInteger threadCount = new AtomicInteger();
