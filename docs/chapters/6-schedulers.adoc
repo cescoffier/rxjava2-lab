@@ -252,18 +252,14 @@ In addition if you are using Vert.x, it provides also schedulers as well to exec
 Now let's see a few examples where we can directly apply schedulers to control the concurrency of
 our API.
 
-
+TODO: explain the assigments
 
 === Document your concurrency
 
 When returning a reactive type, you *must* always document the thread the emissions will take place on.
 
-to finish
+TODO: FINISH
 
 === API should expose a consistent threading model
 
-todo:
-
-1 - explain how RX handle concurrency and what is a scheduler (brief)
-2 - what are the type of scheduler
-3 - why it matters when building a RX API
+TODO: FINISH
