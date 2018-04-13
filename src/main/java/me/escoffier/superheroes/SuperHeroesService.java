@@ -32,7 +32,6 @@ public class SuperHeroesService {
         router.get("/villains").handler(this::getAllVillains);
         router.get("/heroes/random").handler(this::getRandomHero);
         router.get("/heroes/:id").handler(this::getHeroById);
-        router.get("/heroes").handler(this::getAllVillains);
         router.get("/villains/random").handler(this::getRandomVillain);
         router.get("/villains/:id").handler(this::getVillainById);
 
