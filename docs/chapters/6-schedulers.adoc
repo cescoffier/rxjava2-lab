@@ -249,17 +249,91 @@ In addition if you are using Vert.x, it provides also schedulers as well to exec
 
 === Schedulers in practice
 
-Now let's see a few examples where we can directly apply schedulers to control the concurrency of
-our API.
+Now let's see a couple of examples where we can directly apply schedulers to control the concurrency of our API.
 
-TODO: explain the assigments
+In the first exercise we use the `java.net.HttpURLConnection` to achieve an HTTP request to the _Super Heroes Service_.
 
-=== Document your concurrency
+`HttpURLConnection` is certainly one of the worse way to do an HTTP request but it's a good example of an API that
+blocks waiting for IO completions.
 
-When returning a reactive type, you *must* always document the thread the emissions will take place on.
+In `me.escoffier.lab.chapter6.Code7`, use the `subscribeOn`, to change the thread performing the HTTP requests.
 
-TODO: FINISH
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter6/Code7_Solution.java[]
+----
+****
 
-=== API should expose a consistent threading model
+You should get an output like:
 
-TODO: FINISH
+[source]
+----
+0    main                          ---------------- Subscribing
+8    main                          ---------------- Subscribed
+163  Scheduler-0                   Emitting: Superman
+164  Scheduler-0                   Received Superman
+166  Scheduler-0                   Emitting: Batman
+166  Scheduler-0                   Received Batman
+169  Scheduler-0                   Emitting: Aquaman
+169  Scheduler-0                   Received Aquaman
+171  Scheduler-0                   Emitting: Captain America
+171  Scheduler-0                   Received Captain America
+171  Scheduler-0                   Completing
+171  Scheduler-0                   Complete
+----
+
+The second exercise extends the first one but now we assume that the same code is used in an event-loop model.
+
+For the example we use Vert.x, but the same reasoning would apply for other event-loop systems or even Android UI.
+
+In `me.escoffier.lab.chapter6.Code8`, the subscription is performed on the Vert.x event-loop thread. Using a blocking
+computation in this context is forbidden, in addition the subscriber expects to be notified on the *same* thread.
+
+Use the `subscribeOn` and `observeOn` to avoid blocking the event loop and deliver the subscriber notifications
+on the same event loop thread.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter6/Code8_Solution.java[]
+----
+****
+
+You should get an output like:
+
+[source]
+----
+0    vert.x-eventloop-thread-0     ---------------- Subscribing
+10   vert.x-eventloop-thread-0     ---------------- Subscribed
+194  Scheduler-0                   Emitting: Superman
+195  vert.x-eventloop-thread-0     Received Superman
+197  Scheduler-0                   Emitting: Batman
+198  vert.x-eventloop-thread-0     Received Batman
+202  Scheduler-0                   Emitting: Aquaman
+202  vert.x-eventloop-thread-0     Received Aquaman
+203  Scheduler-0                   Emitting: Captain America
+204  Scheduler-0                   Completing
+204  vert.x-eventloop-thread-0     Received Captain America
+204  vert.x-eventloop-thread-0     Complete
+----
+
+Notice that each emission is performed on the scheduler thread and each notification is performed on the
+same thread that did the subscription.
+
+=== Conclusion
+
+We have seen that RxJava `subscribeOn` and `observeOn` are powerful tool for controlling the execution thread
+of emissions and notifications.
+
+Your API should be as much consistent as possible accross all reactive methods, to respect the principle of
+least expectation.
+
+An application requiring to be notified on a different thread, can always use `observeOn` to chose the
+scheduler the notifications will take place on.
+
+So when returning a reactive type, you *must* always document the thread the emissions will take place on as well
+as the thread the notifications will take place on, to give the API user the opportunity to take this decision.
+
