@@ -326,7 +326,8 @@ same thread that did the subscription.
 === Conclusion
 
 We have seen that RxJava `subscribeOn` and `observeOn` are powerful tool for controlling the execution thread
-of emissions and notifications.
+of emissions and notifications. We used mainly the `Observable` type, but these applies to all
+reactive types: `Single`, `Flowable`, `Completable` and `Maybe`.
 
 Your API should be as much consistent as possible accross all reactive methods, to respect the principle of
 least expectation.
