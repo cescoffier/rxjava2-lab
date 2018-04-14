@@ -11,15 +11,19 @@ import io.reactivex.Observable;
 public class Code8_Solution {
 
 	static Observable<String> operationWithCleanup() {
-		DirectoryStream<Path> stream;
-		try {
-			stream = Files.newDirectoryStream(new File(".").toPath());
-		} catch (IOException e) {
-			return Observable.error(e);
-		}
-		return Observable.fromIterable(stream)
-				.map(path -> path.toString())
-				.doFinally(() -> stream.close());
+		return Observable.create(emitter -> {
+			DirectoryStream<Path> stream;
+			try {
+				stream = Files.newDirectoryStream(new File(".").toPath());
+			} catch (IOException e) {
+				emitter.onError(e);
+				return;
+			}
+			for(Path path : stream)
+				emitter.onNext(path);
+			stream.close();
+			emitter.onComplete();
+		}).map(path -> path.toString());
 	}
 	
 	

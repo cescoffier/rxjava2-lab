@@ -10,12 +10,14 @@ the previous chapters to match the flows to what you want to expose.
 
 ==== Reading a file with an RX implementation
 
-In this example, we will show you how to read a file using the Vert.x FileSystem RX API. Here
+In this example, we will show you how to read a file using the 
+https://vertx.io/docs/vertx-core/java/#_using_the_file_system_with_vert_x[Vert.x FileSystem] 
+https://vertx.io/docs/apidocs/io/vertx/reactivex/core/file/FileSystem.html[RX API]. Here
 we want to expose reading of a file directly into text: 
 
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code01.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code1.java[]
 ----
 
 As you can see it's just a matter of building the right pipeline to get the file content
@@ -24,16 +26,43 @@ and transform it into text.
 ==== Reading a file with a non-RX async implementation
 
 In many cases, you will be interacting with non-RX implementations that have their own
-async variant. Take `AsynchronousFileChannel` from the JDK, for example: they
+async variant. Take 
+https://docs.oracle.com/javase/8/docs/api/java/nio/channels/AsynchronousFileChannel.html[`AsynchronousFileChannel`]
+from the JDK, for example: they
 allow you to read a file asynchronously, and require a listener from you, which will
 be notified on success or failure. In this case you have to bridge this async API with
-RX, so you do that by using `Single.create` which will give you an `Emitter`
+RX, so you do that by using 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#create-io.reactivex.SingleOnSubscribe-[`Single.create`]
+which will give you an 
+http://reactivex.io/RxJava/javadoc/io/reactivex/SingleEmitter.html[`Emitter`]
 object that you use to push notifications into the `Single` you're creating: 
 
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code01b.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code2.java[]
 ----
+
+As you can see it's a little bit more complex because you have to deal with completion
+and errors yourself.
+
+==== Producing a stream from a non-async source
+
+Like for creating `Single`, it is possible to create the other types `Flowable`,
+`Observable`, `Maybe` and `Completable` from scratch with an `Emitter`.
+
+In the next example, we're going to use 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Observable.html#create-io.reactivex.ObservableOnSubscribe-[`Observable.create`]
+to push all the files found in the current folder, recursively.
+
+Open the `me.escoffier.lab.chapter5.Code3` class and fill in missing code:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code3_Solution.java[]
+----
+****
 
 As you can see it's a little bit more complex because you have to deal with completion
 and errors yourself.
@@ -47,11 +76,14 @@ For example, if we want to build an API that exposes a `Flowable` of super-heroe
 using the Vert.x `FileSystem` we are going to read the file, which gives us a
 `Single<Buffer>` and we want to end up with a `Flowable<SuperStuff>` so
 we are going to have to adapt our pipeline to spread the single result into a stream,
-and this is usually done with the variant of `flatMap` which is `flatMapFlowable`:
+and this is usually done with the variant of 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#flatMap-io.reactivex.functions.Function-[`flatMap`]
+which is 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#flatMapPublisher-io.reactivex.functions.Function-[`flatMapPublisher`]:
 
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code02.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code4.java[]
 ----
 
 ==== Reading values from an RX API
@@ -60,115 +92,13 @@ If you require the user to give you RX values in your API, you can just accept t
 RX type as parameter. Let's take the previous example and allow the user to provide the
 super-hero file name as parameter. 
 
-Open the `me.escoffier.lab.chapter5.Code03` class and fill in missing code:
+Open the `me.escoffier.lab.chapter5.Code5` class and fill in missing code:
 
 [.assignment]
 ****
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code03_Solution.java[]
-----
-****
-
-=== Porting blocking code to RX
-
-Most of the time you will have legacy code that is blocking and which you need to port to
-reactive programming. Often, the hard part will be to simply avoid blocking, so let's see
-a simple strategy for that. 
-
-==== Example blocking call
-
-Let's start with an example of a legacy blocking API that takes one second to complete: 
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code1.java[]
-----
-
-_Note_: Here we're faking an expensive blocking operation by sleeping, but most of the time
-those blocking calls will wait for IO or for expensive computations.
-
-==== When you have a non-blocking alternative
-
-Sometimes it's easy to replace blocking code by non-blocking code. Either you can use another
-library that is non-blocking, if the blocking code is not yours, or you can find support in RX,
-like in our example, because RX has support for delaying code: 
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code2.java[]
-----
-
-_Note_: OK you've caught me: we've actually ported a call to `sleep` that faked an expensive
-code into code that waits for one second with `delay` but couldn't possibly do anything else by wait, so
-it's really an edgy example.
-
-If you run this code, you will notice that we're not actually getting notified, so what happened?
-
-==== Side-note about who executes what
-
-In the next chapter we will cover `Schedulers` in detail, but we have to explain what happened in the
-last code sample.
-
-What happened was that we created a `Single` with a `delay` which is supposed to be emitted later
-in the future, and we subscribed to it, but remember that all that is non-blocking. So RX planned for
-our `Single` to emit in the future, and returned to the caller thread which called the main thread.
-And then we returned from the main thread, so the JVM shut down.
-
-In most cases your code will not run from the main thread and the JVM will not terminate when your
-function is called, like in most backend servers. So in order to emulate the JVM not terminating
-there are several ways to make it wait for the RX subscriber to be done, like sleeping longer.
-
-Just comment out the sleeping code and run the example.
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code2.java[]
-----
-
-Now it works and we've created our first async API.
-
-For the sake of completeness, let us list several preferrable options for blocking the main thread,
-such as using a `CountDownLatch`:
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code3.java[]
-----
-
-Or even — the irony — blocking by transforming our `Single` into a JDK `Future` and blocking
-on it:
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code4.java[]
-----
-
-Or simply by calling the `Single.blockingGet` method:
-
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code5.java[]
-----
-
-==== When you have no choice but to use a thread
-
-Sometimes you just have to use blocking APIs, even though you want to expose an RX API
-which can't block the current thread. In this case you can offload your blocking calls
-to a new thread, or a thread pool, or a special scheduler, whatever you want.
-
-This can be done by using `Single.create` which provides you with a `SingleEmitter`
-object you can call to notify the `Single` when you have your item (by calling `onSuccess`),
-or an exception (by calling `onError`).
-
-Open the `me.escoffier.lab.chapter5.Code6` class and fill in the blocking code we had
-in the `Code1` example that we could not port:
-
-[.assignment]
-****
-[source, java]
-----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code6_Solution.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code5_Solution.java[]
 ----
 ****
 
@@ -182,17 +112,18 @@ Some objects require a manual clean-up after they're not used anymore. Closing s
 freeing buffers, returning pooled objects, there are many examples of resources that
 need to be cleaned up.
 
-When you need to do clean-up after an `Observable` is finished, you can use the `doFinally()`
+When you need to do clean-up after an `Observable` is finished, you can use the 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Observable.html#doFinally-io.reactivex.functions.Action-[`doFinally()`]
 method which is called in any completion case (success or exception).
 
-Open the `me.escoffier.lab.chapter5.Code7` class and add the `doFinally` call that
+Open the `me.escoffier.lab.chapter5.Code6` class and add the `doFinally` call that
 cleans-up the directory stream:
 
 [.assignment]
 ****
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code7_Solution.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code6_Solution.java[]
 ----
 ****
 
@@ -208,13 +139,13 @@ There is another reason to want to do operations for a subscriber, which is that
 re-usable for more than one subscriber.
 
 Witness what happens if you subscribe more than once to iterate the files by editing the 
-`me.escoffier.lab.chapter5.Code8` class to iterate twice:
+`me.escoffier.lab.chapter5.Code7` class to iterate twice:
 
 [.assignment]
 ****
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code8_Solution.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code7_Solution.java[]
 ----
 ****
 
@@ -250,14 +181,14 @@ java.lang.IllegalStateException: Directory stream is closed
 This is because we ran the clean-up operation after the first iteration, but we cleaned up
 an instance of the directory stream that is shared across every subscriber.
 
-Edit the `me.escoffier.lab.chapter5.Code9` class to use an `emitter` to allocate
+Edit the `me.escoffier.lab.chapter5.Code8` class to use an `emitter` to allocate
 and clean up the directory stream for every subscriber:
 
 [.assignment]
 ****
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter5/Code9_Solution.java[]
+include::../../src/main/java/me/escoffier/lab/chapter5/Code8_Solution.java[]
 ----
 ****
 
@@ -271,9 +202,120 @@ be subscribed to once.
 
 In cases like these, if you return the RX type, the user can choose to never subscribe,
 or subscribe more than once. In order to force the user to consume the resource, you can
-turn things around and require the user to provide you with a `Consumer` instead:
+turn things around and require the user to provide you with an 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Observer.html[`Observer`] instead:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code9.java[]
+----
+
+=== Porting blocking code to RX
+
+Most of the time you will have legacy code that is blocking and which you need to port to
+reactive programming. Often, the hard part will be to simply avoid blocking, so let's see
+a simple strategy for that. 
+
+==== Example blocking call
+
+Let's start with an example of a legacy blocking API that takes one second to complete: 
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter5/Code10.java[]
 ----
+
+_Note_: Here we're faking an expensive blocking operation by sleeping, but most of the time
+those blocking calls will wait for IO or for expensive computations.
+
+==== When you have a non-blocking alternative
+
+Sometimes it's easy to replace blocking code by non-blocking code. Either you can use another
+library that is non-blocking, if the blocking code is not yours, or you can find support in RX,
+like in our example, because RX has support for delaying code: 
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code11.java[]
+----
+
+_Note_: OK you've caught me: we've actually ported a call to `sleep` that faked an expensive
+code into code that waits for one second with 
+http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#delay-long-java.util.concurrent.TimeUnit-[`delay`]
+but couldn't possibly do anything else by wait, so it's really an edgy example.
+
+If you run this code, you will notice that we're not actually getting notified, so what happened?
+
+==== Side-note about who executes what
+
+In the next chapter we will cover `Schedulers` in detail, but we have to explain what happened in the
+last code sample.
+
+What happened was that we created a `Single` with a `delay` which is supposed to be emitted later
+in the future, and we subscribed to it, but remember that all that is non-blocking. So RX planned for
+our `Single` to emit in the future, and returned to the caller thread which called the main thread.
+And then we returned from the main thread, so the JVM shut down.
+
+In most cases your code will not run from the main thread and the JVM will not terminate when your
+function is called, like in most backend servers. So in order to emulate the JVM not terminating
+there are several ways to make it wait for the RX subscriber to be done, like sleeping longer.
+
+Just comment out the sleeping code and run the example.
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code11.java[]
+----
+
+Now it works and we've created our first async API.
+
+For the sake of completeness, let us list several preferable options for blocking the main thread,
+such as using a `CountDownLatch`:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code12.java[]
+----
+
+Or even — the irony — blocking by transforming our `Single` into a JDK 
+https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Future.html[`Future`] and blocking
+on it:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code13.java[]
+----
+
+Or simply by calling the `Single.blockingGet` method:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code14.java[]
+----
+
+==== When you have no choice but to use a thread
+
+Sometimes you just have to use blocking APIs, even though you want to expose an RX API
+which can't block the current thread. In this case you can offload your blocking calls
+to a new thread, or a thread pool, or a special scheduler, whatever you want.
+
+This can be done by using `Single.create` which provides you with a `SingleEmitter`
+object you can call to notify the `Single` when you have your item (by calling `onSuccess`),
+or an exception (by calling `onError`).
+
+Open the `me.escoffier.lab.chapter5.Code15` class and fill in the blocking code we had
+in the `Code1` example that we could not port:
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter5/Code15_Solution.java[]
+----
+****
+
+=== Conclusion
+
+In this chapter we have seen how to create an RX API that bridges several types of existing APIs,
+and how to avoid some common mistakes while writing an RX API. In the next chapter we will talk
+in more detail about how RX is scheduled.

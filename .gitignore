@@ -1,3 +1,5 @@
+*.iml
+.idea
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -14,3 +16,4 @@ buildNumber.properties
 .vscode
 docs/output/*
 /hello.txt
+.idea/

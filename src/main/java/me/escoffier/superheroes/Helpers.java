@@ -12,6 +12,9 @@ import io.vertx.reactivex.ext.web.client.HttpResponse;
 import io.vertx.reactivex.ext.web.client.WebClient;
 
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class Helpers {
@@ -64,6 +67,31 @@ public class Helpers {
             .map(j -> j.mapTo(SuperStuff.class))
             .filter(SuperStuff::isVillain);
     }
+
+    public static void sleep(int ms) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private static final AtomicLong START_TIME = new AtomicLong();
+
+    public static void log(String msg) {
+        long now = System.currentTimeMillis();
+        START_TIME.compareAndSet(0, now);
+        long elapsed = now - START_TIME.get();
+        String name = Thread.currentThread().getName();
+        System.out.format("%2$-4s %1$-26s    %3$s\n", name, elapsed, msg);
+    }
+
+    private static final AtomicInteger threadCount = new AtomicInteger();
+    public static final ThreadFactory threadFactory = r -> {
+        Thread thread = new Thread(r);
+        thread.setName("Scheduler-" + threadCount.getAndIncrement());
+        return thread;
+    };
 
 
 }

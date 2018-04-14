@@ -12,17 +12,26 @@ import java.util.stream.Collectors;
 public class SuperHeroesService {
 
     public static void main(String[] args) {
-        SuperHeroesService service = new SuperHeroesService();
+        SuperHeroesService service = new SuperHeroesService(true);
         service.start().subscribe();
     }
 
     public static void run() {
-        new SuperHeroesService().start().blockingAwait();
+        new SuperHeroesService(true).start().blockingAwait();
     }
 
+    public static void run(boolean verbose) {
+        new SuperHeroesService(verbose).start().blockingAwait();
+    }
+
+    private final boolean verbose;
     private Random random = new Random();
     private Map<Integer, SuperStuff> villains;
     private Map<Integer, SuperStuff> heroes;
+
+    public SuperHeroesService(boolean verbose) {
+        this.verbose = verbose;
+    }
 
     public Completable start() {
         Vertx vertx = Vertx.vertx();
@@ -32,13 +41,16 @@ public class SuperHeroesService {
         router.get("/villains").handler(this::getAllVillains);
         router.get("/heroes/random").handler(this::getRandomHero);
         router.get("/heroes/:id").handler(this::getHeroById);
-        router.get("/heroes").handler(this::getAllVillains);
         router.get("/villains/random").handler(this::getRandomVillain);
         router.get("/villains/:id").handler(this::getVillainById);
 
         return vertx.fileSystem().rxReadFile("src/main/resources/entities.json")
             .map(buffer -> buffer.toJsonArray().stream().map(o -> new SuperStuff((JsonObject) o)).collect(Collectors.toList()))
-            .doOnSuccess(list -> System.out.println("Loaded " + list.size() + " heroes and villains"))
+            .doOnSuccess(list -> {
+                if (verbose) {
+                    System.out.println("Loaded " + list.size() + " heroes and villains");
+                }
+            })
             .doOnSuccess(list -> {
                 this.villains = list.stream().filter(SuperStuff::isVillain).collect(
                     HashMap::new, (map, superStuff) -> map.put(superStuff.getId(), superStuff), HashMap::putAll);
@@ -95,7 +107,9 @@ public class SuperHeroesService {
         List<SuperStuff> h = new ArrayList<>(heroes.values());
         int index = random.nextInt(h.size());
         SuperStuff hero = h.get(index);
-        System.out.println("Selected hero " + hero);
+        if (verbose) {
+            System.out.println("Selected hero " + hero);
+        }
         rc.response().end(hero.toJson().encodePrettily());
     }
 
@@ -103,7 +117,9 @@ public class SuperHeroesService {
         List<SuperStuff> h = new ArrayList<>(villains.values());
         int index = random.nextInt(h.size());
         SuperStuff villain = h.get(index);
-        System.out.println("Selected villain " + villain);
+        if (verbose) {
+            System.out.println("Selected villain " + villain);
+        }
         rc.response().end(villain.toJson().encodePrettily());
     }
 

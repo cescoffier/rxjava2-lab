@@ -18,7 +18,8 @@ public class Code7 {
 			return Observable.error(e);
 		}
 		return Observable.fromIterable(stream)
-				.map(path -> path.toString());
+				.map(path -> path.toString())
+				.doFinally(() -> stream.close());
 	}
 	
 	

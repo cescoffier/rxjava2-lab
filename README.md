@@ -6,11 +6,15 @@ The instructions are available on http://escoffier.me/rxjava-hol/.
 
 ## Teasing
 
-Reactive programing combines functional programming and data streams. In other words it's a bit fuzzy...
+Reactive programming combines functional programming and data streams.
+In other words it's a bit fuzzy...
 
-RX Java 2 is a library implementing the reactive programing paradigm. In this lab, you learn how to use RX Java 2, the concepts, the operators and the good practices. It explains how RX Java 2 lets you build concurrent applications easily, how to manage errors... But RX Java 2 is not a silver bullet! 
+RX Java 2 is a library implementing the reactive programing paradigm.
+In this lab, you learn how to use RX Java 2, the concepts, the operators and the good practices.
+It explains how RX Java 2 lets you build concurrent applications easily, how to manage errors...but RX Java 2 is not a silver bullet! 
 
-This lab also covers how to propose a RX Java API. Indeed with the reactive movements, lots of blocking and synchronous API are no more usable. 
+This lab also covers how to propose a RX Java API.
+Indeed, with the reactive movements, lots of blocking and synchronous API are not usable anymore. 
 
 ## Content
 
@@ -22,9 +26,9 @@ This lab also covers how to propose a RX Java API. Indeed with the reactive move
 * Schedulers and concurrency
 * Testing
 
-## Want to improve this lab ?
+## Want to improve this lab?
 
-Forks and PRs are definitely welcome!
+Forks and pull requests are definitely welcome!
 
 ## Building
 
