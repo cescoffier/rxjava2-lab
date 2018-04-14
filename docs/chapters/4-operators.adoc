@@ -173,6 +173,48 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code13_Solution.java[]
 ----
 ****
 
+=== Error recovery
+
+Even when using RX, error happens. I told you it's not a silver bullet. But, I've a good news for you: there are operators to handle error recovery. 
+
+Let's start with some _simple" case. Image you want to emit a request to our Super Heroes and Villains service, but the service is not started. Something like the `me.escoffier.lab.chapter4.Code14` class:
+
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code14.java[]
+----
+
+When you run this program, you get:
+
+[source]
+----
+Oh no... something bad happened: io.netty.channel.AbstractChannel$AnnotatedConnectException: Connection refused: localhost/127.0.0.1:8080
+----
+
+Let's now use the `onErrorReturnItem` operator that let you recover from an error by injecting a default result. There is also a variant named `onErrorReturn` that let you decide of the value to return based on the error (`Throwable`). Edit the class to use the `onErrorReturnItem` or `onErrorReturn` to avoid recover from the error.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code14_Solution.java[]
+----
+****
+
+The `onErrorResumeNext` operator is similar to `onErrorReturnItem` but returns a stream. Basically, if an error happen, it replaces the stream with the given one. Open the `me.escoffier.lab.chapter4.Code15` class and use the `onErrorResumeNext` to inject another `Single`. You can use `Single.just` to create a stream with an already known value.
+
+[.assignment]
+****
+[source, java]
+----
+include::../../src/main/java/me/escoffier/lab/chapter4/Code15_Solution.java[]
+----
+****
+
+The `onErrorResumeNext` is quite useful when you want to execute another async operation when an initial one failed. It also can substitute a stream in error with a default stream similar to a _switchOnError_ operator (that does not exist).
+
+The last error recovery mechanism we are going to see is very powerful but can be dangerous too. The `retry` operator re-subscribes to a stream that emitted an error. It's behavior depends on the cold / hot nature of the observed stream. On a cold stream, the resubscription restarts the stream from the beginning. To it's very useful to retry a failed operation such as a HTTP call. The retry operator has several variant letting you decide whether or not you want to retry based on the error and the number of attempts.
+
 === Conclusion
 
 This chapter introduced a few operators. RX Java 2 is proposing a lot more operators. Check the https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-Observable-Operators[operator list] to see the full list.
