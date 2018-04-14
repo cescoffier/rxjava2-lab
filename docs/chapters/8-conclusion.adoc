@@ -1,0 +1,47 @@
+== Conclusion
+
+Here we are... it will be time to separate us. But before this, I would like to tell you a few more things.
+
+With the reactive trend, being able to provide asynchronous and reactive API is becoming more and more important. In this lab we have seen one way to build such an API with RX Java. It's not the only way but it's a popular way. RX Java gives you superpowers to build asynchronous and concurrent applications. But as the super hero you are knows: "with great power comes great responsibility". 
+
+Don't believe these agile gurus telling you that documentation is useless. When dealing with asynchronous things, documentation, and mainly _javadoc_, is primordial. Each method must be documented and a few set of aspect must be described:
+
+* How are error propagated
+* Back-pressure: If there is back-pressure - how the back pressure protocol behaves on your method
+* Scheduler: On which scheduler the method runs on, can it be configured.
+
+For example, http://reactivex.io/RxJava/javadoc/io/reactivex/Flowable.html#delay-io.reactivex.functions.Function-[the delay operator] is documented as follows:
+
+[source, java]
+----
+@CheckReturnValue
+@BackpressureSupport(value=FULL)
+@SchedulerSupport(value="none")
+public final <U> Flowable<T> delay(Function<? super T,? extends Publisher<U>> itemDelayIndicator)
+
+Returns a Flowable that delays the emissions of the source Publisher via another Publisher on a per-item basis.
+
+Note: the resulting Publisher will immediately propagate any onError notification from the source Publisher.
+
+Backpressure: The operator doesn't interfere with the backpressure behavior which is determined by the source Publisher. All of the other Publishers supplied by the function are consumed in an unbounded manner (i.e., no backpressure applied to them).
+
+Scheduler: This version of delay does not operate by default on a particular Scheduler.
+
+Type Parameters:
+U - the item delay value type (ignored)
+
+Parameters:
+itemDelayIndicator - a function that returns a Publisher for each item emitted by the source Publisher, which is then used to delay the emission of that item by the resulting Publisher until the Publisher returned from itemDelay emits an item
+
+Returns: a Flowable that delays the emissions of the source Publisher via another Publisher on a per-item basis
+
+See Also: ReactiveX operators documentation: Delay
+----
+
+The RX library proposes lots of operator. You can also implement your own. However, this is a complicated task, so before check the following projects providing some custom operators for RX Java 2:
+
+* https://github.com/akarnokd/RxJava2Extensions[RxJava 2.x extra sources, operators and components and ports of many 1.x companion libraries.]
+* https://github.com/davidmoten/rxjava2-extras[Utilities for use with RxJava 2]
+
+This time, it's the end. I hope you enjoyed this lab. Of course, comments, feedback and pull requests are more than welcome.
+
