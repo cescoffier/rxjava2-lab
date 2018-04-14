@@ -6,14 +6,14 @@ import io.vertx.reactivex.core.file.FileSystem;
 
 public class Code1 {
 
-	static Single<String> getHeroesFile() {
-		Vertx vertx = Vertx.vertx();
-		FileSystem fileSystem = vertx.fileSystem();
-		return fileSystem.rxReadFile("src/main/resources/entities.json")
-				.map(buffer -> buffer.toString());
+	public static void main(String[] args) {
+		getFile().subscribe(System.out::println, Throwable::printStackTrace);
 	}
 
-    public static void main(String[] args) {
-    	getHeroesFile().subscribe(System.out::println, Throwable::printStackTrace);
-    }
+	static Single<String> getFile() {
+		Vertx vertx = Vertx.vertx();
+		FileSystem fileSystem = vertx.fileSystem();
+		return fileSystem.rxReadFile("src/main/resources/characters.json")
+				.map(buffer -> buffer.toString());
+	}
 }

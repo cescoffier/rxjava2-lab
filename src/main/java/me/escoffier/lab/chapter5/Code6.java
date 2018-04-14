@@ -1,31 +1,44 @@
 package me.escoffier.lab.chapter5;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import io.reactivex.Maybe;
+import io.reactivex.Single;
+import me.escoffier.superheroes.Character;
 
-import io.reactivex.Observable;
+public class Code6 extends AbstractSuperAPI {
 
-public class Code6 {
+    public static void main(String[] args) {
+        new Code6().findByName("SuperGirl")
+            .subscribe(
+                c -> System.out.println(c.getName() + " is a super " + (c.isVillain() ? "villain" : "hero")),
+                Throwable::printStackTrace,
+                () -> System.out.println("Nope"));
 
-	static Observable<String> operationWithCleanup() {
-		DirectoryStream<Path> stream;
-		try {
-			stream = Files.newDirectoryStream(new File(".").toPath());
-		} catch (IOException e) {
-			return Observable.error(e);
-		}
-		return Observable.fromIterable(stream)
-				.map(path -> path.toString());
-	}
-	
-	
+        new Code6().findByName("Clement")
+            .subscribe(
+                c -> System.out.println(c.getName() + " is a super " + (c.isVillain() ? "villain" : "hero")),
+                Throwable::printStackTrace,
+                () -> System.out.println("No, Clement is not a " + "super hero (and not a super villain either despite the rumor)"));
 
-    public static void main(String[] args) throws InterruptedException {
-    	Observable<String> files = operationWithCleanup();
-    	files.subscribe(value -> System.out.println("File: "+value),
-    			x -> x.printStackTrace());
+        new Code6().findByNameOrError("Yoda")
+            .subscribe(
+                c -> System.out.println(c.getName() + " is a super " + (c.isVillain() ? "villain" : "hero")),
+                Throwable::printStackTrace);
+
+        new Code6().findByNameOrError("Clement")
+            .subscribe(
+                c -> System.out.println(c.getName() + " is a super " + (c.isVillain() ? "villain" : "hero")),
+                t -> System.out.println("The lookup as failed, as expected, Clement is neither a super hero or super villain"));
+    }
+
+    @Override
+    public Maybe<Character> findByName(String name) {
+        // To implement
+        return super.findByName(name);
+    }
+
+    @Override
+    public Single<Character> findByNameOrError(String name) {
+        // To implement
+        return super.findByNameOrError(name);
     }
 }

@@ -1,30 +1,46 @@
 package me.escoffier.lab.chapter5;
 
-import io.reactivex.Flowable;
+import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.core.file.FileSystem;
 import me.escoffier.superheroes.Character;
 
-public class Code5_Solution {
+import java.util.Collections;
 
-	static Flowable<Character> getHeroesFromFile(Single<String> file) {
-		Vertx vertx = Vertx.vertx();
-		FileSystem fileSystem = vertx.fileSystem();
-		return file.flatMap(name -> fileSystem.rxReadFile(name))
-                .map(Buffer::toJsonArray)
-                .flatMapPublisher(Flowable::fromIterable)
-                .cast(JsonObject.class)
-                .map(j -> j.mapTo(Character.class))
-                .filter(s -> ! s.isVillain());
-	}
-	
-	
+public class Code5_Solution extends AbstractSuperAPI {
 
     public static void main(String[] args) {
-    	Single<String> file = Single.just("src/main/resources/entities.json");
-    	getHeroesFromFile(file).subscribe(System.out::println, Throwable::printStackTrace);
+        new Code5_Solution().hero()
+            .subscribe(System.out::println, Throwable::printStackTrace);
+
+        new Code5_Solution().villain()
+            .subscribe(System.out::println, Throwable::printStackTrace);
     }
+
+    @Override
+    public Single<Character> hero() {
+        return load()
+            .filter(character -> !character.isVillain())
+            .toList()
+            .map(list -> {
+                Collections.shuffle(list);
+                return list;
+            })
+            .flatMapObservable(list -> Observable.fromIterable(list))
+            .firstOrError();
+    }
+
+    @Override
+    public Single<Character> villain() {
+        return load()
+            .filter(character -> character.isVillain())
+            .toList()
+            .map(list -> {
+                if (list.isEmpty()) {
+                    throw new RuntimeException("No villains");
+                }
+                Collections.shuffle(list);
+                return list.get(0);
+            });
+    }
+
 }

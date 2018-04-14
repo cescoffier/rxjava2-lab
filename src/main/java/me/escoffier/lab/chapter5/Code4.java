@@ -1,28 +1,31 @@
 package me.escoffier.lab.chapter5;
 
 import io.reactivex.Flowable;
-import io.vertx.core.json.JsonObject;
-import io.vertx.reactivex.core.Vertx;
-import io.vertx.reactivex.core.buffer.Buffer;
-import io.vertx.reactivex.core.file.FileSystem;
 import me.escoffier.superheroes.Character;
 
-public class Code4 {
-
-	static Flowable<Character> getHeroes() {
-		Vertx vertx = Vertx.vertx();
-		FileSystem fileSystem = vertx.fileSystem();
-        return fileSystem.rxReadFile("src/main/resources/entities.json")
-                .map(Buffer::toJsonArray)
-                .flatMapPublisher(Flowable::fromIterable)
-                .cast(JsonObject.class)
-                .map(j -> j.mapTo(Character.class))
-                .filter(s -> ! s.isVillain());
-	}
-	
-	
+public class Code4 extends AbstractSuperAPI {
 
     public static void main(String[] args) {
-    	getHeroes().subscribe(System.out::println, Throwable::printStackTrace);
+        new Code4().heroes()
+            .count()
+            .subscribe(i -> System.out.println(i + " heroes loaded"), Throwable::printStackTrace);
+
+        new Code4().villains()
+            .count()
+            .subscribe(i -> System.out.println(i + " villains loaded"), Throwable::printStackTrace);
+    }
+
+    @Override
+    public Flowable<Character> heroes() {
+        return load()
+            // Select only heroes
+        ;
+    }
+
+    @Override
+    public Flowable<Character> villains() {
+        return load()
+            // Select only villains
+        ;
     }
 }

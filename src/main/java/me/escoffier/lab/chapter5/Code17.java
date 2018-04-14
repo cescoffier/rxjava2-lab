@@ -4,16 +4,15 @@ import io.reactivex.Single;
 import me.escoffier.superheroes.Character;
 
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class Code15 {
+public class Code17 {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
         System.out.println("Before operation");
-        getBlockingSuperVillain()
-            .subscribe(value -> System.out.println("Operation completed: " + value));
-
-        Thread.sleep(2000);
+        Character value = getBlockingSuperVillain().toFuture().get();
+        System.out.println("Operation completed: " + value);
     }
 
     private static Single<Character> getBlockingSuperVillain() {

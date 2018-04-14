@@ -1,24 +1,34 @@
 package me.escoffier.lab.chapter5;
 
+import io.reactivex.Observable;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 public class Code10 {
 
-	static int blockingOperation() {
-		System.out.println("Operation starting");
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("Operation done");
-		return 42;
-	}
-	
-	
+    private static final Path DIRECTORY = new File("src/main/resources/super/heroes").toPath();
 
     public static void main(String[] args) {
-		System.out.println("Before operation");
-    	int result = blockingOperation();
-		System.out.println("After operation: "+result);
+        Observable<String> files = getHeroesNames();
+        files.subscribe(value -> System.out.println("Subscriber 1: " + value),
+            Throwable::printStackTrace);
+        files.subscribe(value -> System.out.println("Subscriber 2: " + value),
+            Throwable::printStackTrace);
+    }
+
+    private static Observable<String> getHeroesNames() {
+        DirectoryStream<Path> stream;
+        try {
+            stream = Files.newDirectoryStream(DIRECTORY);
+        } catch (IOException e) {
+            return Observable.error(e);
+        }
+        return Observable.fromIterable(stream)
+            .map(path -> path.toFile().getName())
+            .doFinally(stream::close);
     }
 }

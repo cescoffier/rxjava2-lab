@@ -1,24 +1,25 @@
 package me.escoffier.lab.chapter5;
 
-import java.util.concurrent.TimeUnit;
-
 import io.reactivex.Single;
+import me.escoffier.superheroes.Character;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 public class Code14 {
 
-	static Single<Integer> blockingOperation() {
-		System.out.println("Operation starting");
-		return Single.just(42)
-				.delay(1, TimeUnit.SECONDS)
-				.doAfterTerminate(() -> System.out.println("Operation done"));
-	}
-	
-	
-
-    public static void main(String[] args) throws InterruptedException {
-		System.out.println("Before operation");
-    	Integer result = blockingOperation()
-    	.blockingGet();
-		System.out.println("After operation: "+result);
+    public static void main(String[] args) {
+        System.out.println("Before operation");
+        getBlockingSuperVillain()
+            .subscribe(value -> System.out.println("Operation completed: " + value));
     }
+
+    private static Single<Character> getBlockingSuperVillain() {
+        return Single.just(new Character("Frog-Man",
+            Arrays.asList("super strength", "leaping", "mega agility", "French"),
+            false))
+            .delay(1, TimeUnit.SECONDS)
+            .doAfterTerminate(() -> System.out.println("Operation done"));
+    }
+
 }
