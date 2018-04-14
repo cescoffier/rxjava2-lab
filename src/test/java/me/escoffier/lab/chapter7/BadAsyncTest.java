@@ -1,4 +1,4 @@
-package me.escoffier.lab.chapter8;
+package me.escoffier.lab.chapter7;
 
 import me.escoffier.superheroes.Helpers;
 import me.escoffier.superheroes.Character;

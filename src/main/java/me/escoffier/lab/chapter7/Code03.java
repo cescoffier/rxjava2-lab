@@ -1,4 +1,4 @@
-package me.escoffier.lab.chapter8;
+package me.escoffier.lab.chapter7;
 
 import io.reactivex.Single;
 

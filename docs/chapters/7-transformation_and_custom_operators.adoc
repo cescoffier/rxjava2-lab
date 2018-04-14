@@ -1,8 +1,0 @@
-== Transformation and custom operators
-
-=== Transformers
-
-=== to()
-
-=== Custom operators
-
