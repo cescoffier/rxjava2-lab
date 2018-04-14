@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+###
+# IMPORTANT - this script is intended to be executed from the Docker container providing all the requirements, the code and the chapters.
+##
+
 # Run using:
 #
 # ./convert.sh
