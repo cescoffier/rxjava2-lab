@@ -49,7 +49,7 @@ public class Scraper {
                 names.size() + ")"))
             .toList()
             .flatMapCompletable(list -> vertx.fileSystem()
-                .rxWriteFile("src/main/resources/entities.json", new Buffer(Json.encodeToBuffer(list)))
+                .rxWriteFile("src/main/resources/characters.json", new Buffer(Json.encodeToBuffer(list)))
             )
             .subscribe(
                 () -> System.out.println("Written " + names.size() + " super heroes and villains"),

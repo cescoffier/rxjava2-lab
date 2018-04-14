@@ -51,7 +51,7 @@ public class Helpers {
     }
 
     public static Flowable<Character> heroes() {
-        return fs().rxReadFile("src/main/resources/entities.json")
+        return fs().rxReadFile("src/main/resources/characters.json")
             .map(Buffer::toJsonArray)
             .flatMapPublisher(Flowable::fromIterable)
             .cast(JsonObject.class)
@@ -60,7 +60,7 @@ public class Helpers {
     }
 
     public static Flowable<Character> villains() {
-        return fs().rxReadFile("src/main/resources/entities.json")
+        return fs().rxReadFile("src/main/resources/characters.json")
             .map(Buffer::toJsonArray)
             .flatMapPublisher(Flowable::fromIterable)
             .cast(JsonObject.class)

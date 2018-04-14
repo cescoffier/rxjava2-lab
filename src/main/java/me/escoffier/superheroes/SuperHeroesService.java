@@ -44,7 +44,7 @@ public class SuperHeroesService {
         router.get("/villains/random").handler(this::getRandomVillain);
         router.get("/villains/:id").handler(this::getVillainById);
 
-        return vertx.fileSystem().rxReadFile("src/main/resources/entities.json")
+        return vertx.fileSystem().rxReadFile("src/main/resources/characters.json")
             .map(buffer -> buffer.toJsonArray().stream().map(o -> new Character((JsonObject) o)).collect(Collectors.toList()))
             .doOnSuccess(list -> {
                 if (verbose) {
