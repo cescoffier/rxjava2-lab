@@ -1,29 +1,30 @@
 == Schedulers and concurrency
 
-When creating an RX API, it is key to realize that the threading model of your API and the
-threading of the application consuming your API can be different and might interfere
+When creating an RX API, it is key to realize that the threading model of your API and the threading of the application consuming your API can be different and might interfere:
 
-. The threading model of your API is defined by the the APIs your implementation uses
-. The threading model of the application is defined by the runtime hosting the application
+* The threading model of your API is defined by the the APIs your implementation uses
+* The threading model of the application is defined by the runtime hosting the application
 
-here are a few examples:
+Here are a few examples:
 
-- your API is implemented with a non-blocking event loop library
-- your API is implemented with JDBC a thread blocking API
-- the application runs in a main
-- the application uses thread-per-request model in a servlet container
-- the application runs in a non-blocking event loop server
-- etc...
+* your API is implemented with a non-blocking event loop library
+* your API is implemented with JDBC a thread blocking API
+* the application runs in a main
+* the application uses thread-per-request model in a servlet container
+* the application runs in a non-blocking event loop server
 
-As API designer you have two responsibilities:
+As API designer, you have two responsibilities:
 
 * understand the concurrency of your implementation
-* properly document the concurrency of your API
+* **properly** document the concurrency of your API
+
+And yes sorry, RX won't exempt you to write documentation, quite the contrary actually.
+
+In this chapter we are going to cover the execution model behind RX and how `Schedulers` helps you manage concurrency. First rule: `Schedulers` do not schedule, so don't be confused by the name. But before diving into schedulers, let's explain how RX emission works. Remember, an emission is when an observed stream is pushing a new item to an observer / subscriber.
 
 === Synchronous emissions
 
-Synchronous emission happens when an `Emitter` is invoked during the subscription by the thread
-that is called for the subscription
+Concurrency in RxJava is simple to execute, but somewhat difficult to understand. By default, streams execute work on the caller thread, which is the thread that subscribed it. In many of our earlier examples, this was the main thread that kicked off our `main` method. This synchronous emission happens when an `Emitter` (as the ones used the previous chapter) is invoked during the subscription. This invocation is made by the thread that is executing the _subscription_ (to calling `.subscribe()`). This behavior is depicted in `me.escoffier.lab.chapter6.Code1`:
 
 [source, java]
 ----
@@ -32,7 +33,7 @@ include::../../src/main/java/me/escoffier/lab/chapter6/Code1.java[]
 
 Run this example, you should see:
 
-[source, txt]
+[source]
 ----
 time thread      log
 0    main        ---------------- Subscribing
@@ -51,26 +52,22 @@ time thread      log
 26   main        ---------------- Subscribed
 ----
 
-We can see in this example
+When running this example, you can see a few important points:
 
-- the _main_ thread is the only one involved and all operations are executed on this thread
-- each emission is followed exactly by its corresponding reception
-- the next statement after the subscription operation happens after all the emissions
+* the _main_ thread is the only one involved and all operations are executed on this thread
+* each emission is followed exactly by its corresponding reception
+* the next statement after the subscription operation happens after all the emissions - meaning that the stream has been completely consumed before.
 
-Synchronous emission is not much a problem when no latency is involved, i.e when the operations only
-involve pure computation and don't involve operations that will pause the thread of execution.
-
-However when an operations has a latency, the synchronous emission will impose this latency to the
-subscribing thread like we can see in this example.
+Synchronous emission is not much a problem when no latency is involved, i.e when the operations only involve pure computation and don't involve operations that will pause the thread of execution. However when an operations has a latency, the synchronous emission will impose this latency to the subscribing thread like we can see in this example (`me.escoffier.lab.chapter6.Code2`).
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter6/Code2.java[]
 ----
 
-Run this example, you should see:
+This example produces the following output:
 
-[source, txt]
+[source]
 ----
 0    main        ---------------- Subscribing
 58   main        Emitting: Superman
@@ -88,13 +85,11 @@ Run this example, you should see:
 190  main        ---------------- Subscribed
 ----
 
-It is exactly like the previous example, however we can see that the artificial delay in the emission
-has is also happening in the application code that receives the items.
+It is exactly like the previous example, however we can see that the artificial delay in the emission impacts the application code that receives the items. In our example, our stream is very small, so not a big deal. But imagine the same code, with a lot more items... The main thread would be blocked for a very long time. Definitely not great.
 
 === Asynchronous emissions
 
-Asynchronous emission happens when an `Emitter` is invoked asynchronously by a different thread than
-the subscription thread
+Asynchronous emission happens when an `Emitter` is invoked asynchronously by a different thread than the subscription thread. For example, open `me.escoffier.lab.chapter6.Code3`:
 
 [source, java]
 ----
@@ -103,7 +98,7 @@ include::../../src/main/java/me/escoffier/lab/chapter6/Code3.java[]
 
 Run this example, you should see:
 
-[source, txt]
+[source]
 ----
 time thread      log
 0    main        ---------------- Subscribing
@@ -122,18 +117,15 @@ time thread      log
 25   Thread-0    Complete
 ----
 
-We can see in this example
+With this example:
 
-- there are now two threads involved
-- the _main_ thread that is the application thread
-- the _Thread-0- thread that is the thread the API chose to use for emitting
-- each emission is followed exactly by its corresponding reception (like before)
-- the subscription is executed now quickly, before the actual observable completion happens
+* 2 threads are involved, `main` and `Thread-0` created using `new Thread(...).start()`
+* the `main`` thread is the application thread
+* the `Thread-0` thread is is used for emitting the items
+* each emission is followed exactly by its corresponding reception (like before) because it reuse the emitter thread
+* the subscription happens and returns immediately, before the actual observable completion happens
 
-In this situation the application _main_ thread will not clearly be impacted by the API pauses, however some parts
-of the application will be now executed on the _Thread-0_ thread.
-
-If the application chooses to block, then the emitter thread will his turn be impacted by the blocking.
+In this situation the application _main_ thread will not clearly be impacted by the API pauses, however some parts of the application will be now executed on the _Thread-0_ thread. If the code chooses to block (for example using a blocking method), then the emitter thread will be impacted by the blocking. This mean that it won't be able to emit another item until the thread is unblocked. This is **very** important to understand. When you write long pipelines, with multiple stages, if one of the stage blocks, you are blocking the next emission. While sometimes it's what you want to do, don't forget that if your are observing a hot stream, the emissions will be buffered somewhere (if you don't or can't use back pressure). This behavior is illustrated in ``me.escoffier.lab.chapter6.Code4`:
 
 [source, java]
 ----
@@ -158,21 +150,19 @@ time thread      log
 160  Thread-0    Emitting: Captain America
 190  Thread-0    Received Captain America
 190  Thread-0    Completing
-223  Thread-0    Complete
+191  Thread-0    Complete
 ----
-
-- we have the same two threads like before
-- pausing the application also pauses the API asynchronous emission thread
 
 === Scheduling operations
 
-RxJava schedulers can change the behavior of the emitter and subscriber threads.
+Ok, let's now discussed _schedulers_. RxJava schedulers can change the behavior of the emitter and subscriber threads. Typically, you can switch on which threads the emissions happen. A scheduler is very similar to a Java `Executor`, it can actually be seen as a thread pool (most of the time they are).
 
-A scheduler is very similar to a Java `Executor`.
+RxJava makes concurrency and multi-threading much easier. RxJava handles concurrency for you mainly using two operators: `subscribeOn()` and `observeOn()`.  Some operators such as `flatMap()` can be combined with these two operators to create concurrent data processing. But again, don't be fool. While RxJava can help you make safe and powerful concurrent applications, you still need to be aware of the traps and pitfalls in multi-threading. The _Effective Java_ book
+ is an excellent resource that every Java developer should have, and it covers best practices for concurrent applications.
 
 ==== subscribeOn
 
-The `subscribeOn` operation can change the emitter thread.
+The `subscribeOn` operation can change the emitter thread (`me.escoffier.lab.chapter6.Code5`).
 
 [source, java]
 ----
@@ -181,30 +171,31 @@ include::../../src/main/java/me/escoffier/lab/chapter6/Code5.java[]
 
 Run this example, you should see:
 
-[source, txt]
+[source]
 ----
-0    main            ---------------- Subscribing
-25   main            ---------------- Subscribed
-25   Scheduler-0     Emitting: Superman
-26   Scheduler-0     Received Superman
-26   Scheduler-0     Emitting: Batman
-26   Scheduler-0     Received Batman
-26   Scheduler-0     Emitting: Aquaman
-26   Scheduler-0     Received Aquaman
-26   Scheduler-0     Emitting: Asterix
-27   Scheduler-0     Received Asterix
-27   Scheduler-0     Emitting: Captain America
-27   Scheduler-0     Received Captain America
-27   Scheduler-0     Completing
-27   Scheduler-0     Complete
+0    main                          ---------------- Subscribing
+83   main                          ---------------- Subscribed
+84   Scheduler-0                   Emitting: Superman
+86   Scheduler-0                   Received Superman
+86   Scheduler-0                   Emitting: Batman
+87   Scheduler-0                   Received Batman
+87   Scheduler-0                   Emitting: Aquaman
+88   Scheduler-0                   Received Aquaman
+89   Scheduler-0                   Emitting: Asterix
+89   Scheduler-0                   Received Asterix
+90   Scheduler-0                   Emitting: Captain America
+90   Scheduler-0                   Received Captain America
+91   Scheduler-0                   Completing
+91   Scheduler-0                   Complete
 ----
 
-We perform an asynchronous emission like before but instead of managing the thread directly
-we use the `subscribeOn` operation to to execute the emitter's `subscribe` operation on the scheduler.
+We perform an asynchronous emission like before but instead of managing the thread directly we use the `subscribeOn` operation to to execute the emitter's `subscribe` operation on the scheduler.
+
+_NOTE_: the countdown latch is used to keep the program running until the end of the streams.
 
 ==== observeOn
 
-The `observeOn` operations can change the suscriber thread.
+The `observeOn` operations can change the subscriber thread (`me.escoffier.lab.chapter6.Code6`).
 
 [source, java]
 ----
@@ -213,50 +204,40 @@ include::../../src/main/java/me/escoffier/lab/chapter6/Code6.java[]
 
 Run this example, you should see:
 
-[source, txt]
+[source]
 ----
-0    main            ---------------- Subscribing
-67   main            Emitting: Superman
-68   main            Emitting: Batman
-68   Scheduler-0     Received Superman
-68   main            Emitting: Aquaman
-68   Scheduler-0     Received Batman
-68   main            Emitting: Asterix
-68   Scheduler-0     Received Aquaman
-69   main            Emitting: Captain America
-69   Scheduler-0     Received Asterix
-69   main            Completing
-69   Scheduler-0     Received Captain America
-70   main            ---------------- Subscribed
-70   Scheduler-0     Complete
+0    main                          ---------------- Subscribing
+152  main                          Emitting: Superman
+157  Scheduler-0                   Received Superman
+157  main                          Emitting: Batman
+159  Scheduler-1                   Received Batman
+159  main                          Emitting: Aquaman
+160  Scheduler-2                   Received Aquaman
+161  main                          Emitting: Asterix
+162  Scheduler-3                   Received Asterix
+163  main                          Emitting: Captain America
+164  Scheduler-4                   Received Captain America
+165  main                          Completing
+166  main                          ---------------- Subscribed
+166  Scheduler-5                   Complete
 ----
 
-We perform a synchronous emission but the subscriber thread now executes on the scheduler thread
-instead of the _main_ thread thanks to the `observeOn` operation.
+We perform a synchronous emission but the subscriber thread now executes on the scheduler thread instead of the _main_ thread thanks to the `observeOn` operation.
 
 ==== Schedulers
 
-In the examples we have used a scheduler backed by a fixed thread pool created from a Java executor.
+In the 2 previous examples we have used a scheduler backed by a fixed thread pool created from a Java executor. There are different predefined schedulers by RxJava you can use too:
 
-There are different predefined schedulers by RxJava you can use too
+* The `computation` scheduler for computational work such as event-loops and callback processing. This scheduler uses a fixed number of threads based on the processor count available to your Java process, making it appropriate for computational tasks. Computational tasks (such as math, algorithms, and complex stuff) may utilize cores to their fullest extent. Therefore, there is no benefit in having more worker threads than available cores to perform such work.
+* The `io` scheduler for IO bound operations - This scheduler is used for (blocking) IO tasks such as reading and writing databases, web requests, and disk storage are less expensive on the CPU and often have idle time waiting for the data to be sent or come back. This means you can create threads more liberally, and `Schedulers.io()` is appropriate for this use case. However, it maintains as many threads as there are tasks and grows, caches, and reduces the number of threads as needed. In the case of application with lots of concurrent access, this scheduler can be problematic as it can create too many threads.
+* The `new thread` scheduler creates a new thread for each task. It does not use a pool and creates a new thread for each observer. The thread is destroyed when the observed stream completes. 
+* The `single` scheduler uses a single thread. It's appropriate for event-looping. It can be useful when dealing with fragile and not thread safe code.
 
-- _Computation_ scheduler for computational work such as event-loops and callback processing
-- _IO_ scheduler for IO bound operations
-- _new Thread_ creates a new thread for each task
-- _immediate_ run the task immediately
-
-In addition if you are using Vert.x, it provides also schedulers as well to execute operations within Vert.x thread pools.
+In addition if you are using Vert.x, it provides also schedulers as well to execute operations within Vert.x thread pools (event loop and worker thread pools).
 
 === Schedulers in practice
 
-Now let's see a couple of examples where we can directly apply schedulers to control the concurrency of our API.
-
-In the first exercise we use the `java.net.HttpURLConnection` to achieve an HTTP request to the _Super Heroes Service_.
-
-`HttpURLConnection` is certainly one of the worse way to do an HTTP request but it's a good example of an API that
-blocks waiting for IO completions.
-
-In `me.escoffier.lab.chapter6.Code7`, use the `subscribeOn`, to change the thread performing the HTTP requests.
+Now let's see a couple of examples where we can directly apply schedulers to control the concurrency of our API. In the first exercise we use the `java.net.HttpURLConnection` to achieve an HTTP request to the _Super Heroes Service_. `HttpURLConnection` is certainly one of the worse way to do an HTTP request but it's a good example of an API that blocks waiting for IO completions. In `me.escoffier.lab.chapter6.Code7`, use the `subscribeOn`, to change the thread performing the HTTP requests. As it's clearly an io task, use the `Schedulers.io()` scheduler.
 
 [.assignment]
 ****
@@ -271,28 +252,22 @@ You should get an output like:
 [source]
 ----
 0    main                          ---------------- Subscribing
-8    main                          ---------------- Subscribed
-163  Scheduler-0                   Emitting: Superman
-164  Scheduler-0                   Received Superman
-166  Scheduler-0                   Emitting: Batman
-166  Scheduler-0                   Received Batman
-169  Scheduler-0                   Emitting: Aquaman
-169  Scheduler-0                   Received Aquaman
-171  Scheduler-0                   Emitting: Captain America
-171  Scheduler-0                   Received Captain America
-171  Scheduler-0                   Completing
-171  Scheduler-0                   Complete
+28   main                          ---------------- Subscribed
+376  RxCachedThreadScheduler-1     Emitting: Superman
+376  RxCachedThreadScheduler-1     Received Superman
+380  RxCachedThreadScheduler-1     Emitting: Batman
+380  RxCachedThreadScheduler-1     Received Batman
+397  RxCachedThreadScheduler-1     Emitting: Aquaman
+397  RxCachedThreadScheduler-1     Received Aquaman
+425  RxCachedThreadScheduler-1     Emitting: Captain America
+426  RxCachedThreadScheduler-1     Received Captain America
+426  RxCachedThreadScheduler-1     Completing
+426  RxCachedThreadScheduler-1     Complete
 ----
 
-The second exercise extends the first one but now we assume that the same code is used in an event-loop model.
+The second exercise extends the first one but now we assume that the same code is used in an event-loop model. For the example we use Vert.x, but the same reasoning would apply for other event-loop systems or even Android UI. In `me.escoffier.lab.chapter6.Code8`, the subscription is performed on the Vert.x event-loop thread. Using a blocking computation in this context is **forbidden**, in addition the subscriber expects to be notified on the *same* thread.
 
-For the example we use Vert.x, but the same reasoning would apply for other event-loop systems or even Android UI.
-
-In `me.escoffier.lab.chapter6.Code8`, the subscription is performed on the Vert.x event-loop thread. Using a blocking
-computation in this context is forbidden, in addition the subscriber expects to be notified on the *same* thread.
-
-Use the `subscribeOn` and `observeOn` to avoid blocking the event loop and deliver the subscriber notifications
-on the same event loop thread.
+Use the `subscribeOn` and `observeOn` to avoid blocking the event loop and deliver the subscriber notifications on the same event loop thread.
 
 [.assignment]
 ****
@@ -307,34 +282,26 @@ You should get an output like:
 [source]
 ----
 0    vert.x-eventloop-thread-0     ---------------- Subscribing
-10   vert.x-eventloop-thread-0     ---------------- Subscribed
-194  Scheduler-0                   Emitting: Superman
-195  vert.x-eventloop-thread-0     Received Superman
-197  Scheduler-0                   Emitting: Batman
-198  vert.x-eventloop-thread-0     Received Batman
-202  Scheduler-0                   Emitting: Aquaman
-202  vert.x-eventloop-thread-0     Received Aquaman
-203  Scheduler-0                   Emitting: Captain America
-204  Scheduler-0                   Completing
-204  vert.x-eventloop-thread-0     Received Captain America
-204  vert.x-eventloop-thread-0     Complete
+20   vert.x-eventloop-thread-0     ---------------- Subscribed
+402  RxCachedThreadScheduler-1     Emitting: Superman
+405  vert.x-eventloop-thread-0     Received Superman
+408  RxCachedThreadScheduler-1     Emitting: Batman
+408  vert.x-eventloop-thread-0     Received Batman
+418  RxCachedThreadScheduler-1     Emitting: Aquaman
+418  vert.x-eventloop-thread-0     Received Aquaman
+435  RxCachedThreadScheduler-1     Emitting: Captain America
+435  RxCachedThreadScheduler-1     Completing
+435  vert.x-eventloop-thread-0     Received Captain America
+436  vert.x-eventloop-thread-0     Complete
 ----
 
-Notice that each emission is performed on the scheduler thread and each notification is performed on the
-same thread that did the subscription.
+Notice that each emission is performed on the scheduler thread and each notification is performed on the same thread that did the subscription enforcing the event loop model from Vert.x
 
 === Conclusion
 
-We have seen that RxJava `subscribeOn` and `observeOn` are powerful tool for controlling the execution thread
-of emissions and notifications. We used mainly the `Observable` type, but these applies to all
-reactive types: `Single`, `Flowable`, `Completable` and `Maybe`.
+We have seen that RxJava `subscribeOn` and `observeOn` are powerful tool for controlling the execution thread of emissions and notifications. We used mainly the `Observable` type, but these applies to all reactive types: `Single`, `Flowable`, `Completable` and `Maybe`.
 
-Your API should be as much consistent as possible accross all reactive methods, to respect the principle of
-least expectation.
+Your API should be as much consistent as possible across all reactive methods, to respect the principle of least expectation. An application requiring to be notified on a different thread, can always use `observeOn` to chose the scheduler the notifications will take place on.
 
-An application requiring to be notified on a different thread, can always use `observeOn` to chose the
-scheduler the notifications will take place on.
-
-So when returning a reactive type, you *must* always document the thread the emissions will take place on as well
-as the thread the notifications will take place on, to give the API user the opportunity to take this decision.
+So when returning a reactive type, you *must* always document the thread the emissions will take place on as well as the thread the notifications will take place on, to give the API user the opportunity to take this decision.
 
