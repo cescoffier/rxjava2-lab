@@ -6,7 +6,6 @@ import io.reactivex.schedulers.Schedulers;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 import static me.escoffier.superheroes.Helpers.log;
@@ -14,39 +13,35 @@ import static me.escoffier.superheroes.Helpers.threadFactory;
 
 public class Code6 {
 
-  private static List<String> SUPER_HEROS = Arrays.asList(
-      "Superman",
-      "Batman",
-      "Aquaman",
-      "Asterix",
-      "Captain America"
-  );
+    private static List<String> SUPER_HEROS = Arrays.asList(
+        "Superman",
+        "Batman",
+        "Aquaman",
+        "Asterix",
+        "Captain America"
+    );
 
-  public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-    Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
+        Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
 
-    // Synchronous emission
-    Observable<Object> observable = Observable.create(emitter -> {
-      for (String superHero : SUPER_HEROS) {
-        log("Emitting: " + superHero);
-        emitter.onNext(superHero);
-      }
-      log("Completing");
-      emitter.onComplete();
-    });
-
-    log("---------------- Subscribing");
-    observable
-        .observeOn(scheduler)
-        .subscribe(
-        item -> {
-          log("Received " + item);
-        }, error -> {
-          log("Error");
-        }, () -> {
-          log("Complete");
+        // Synchronous emission
+        Observable<Object> observable = Observable.create(emitter -> {
+            for (String superHero : SUPER_HEROS) {
+                log("Emitting: " + superHero);
+                emitter.onNext(superHero);
+            }
+            log("Completing");
+            emitter.onComplete();
         });
-    log("---------------- Subscribed");
-  }
+
+        log("---------------- Subscribing");
+        observable
+            .observeOn(scheduler)
+            .subscribe(
+                item -> log("Received " + item),
+                error -> log("Error"),
+                () -> log("Complete"));
+        log("---------------- Subscribed");
+    }
 }

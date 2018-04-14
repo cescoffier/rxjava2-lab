@@ -10,41 +10,35 @@ import static me.escoffier.superheroes.Helpers.sleep;
 
 public class Code4 {
 
-  private static List<String> SUPER_HEROS = Arrays.asList(
-      "Superman",
-      "Batman",
-      "Aquaman",
-      "Asterix",
-      "Captain America"
-  );
+    private static List<String> SUPER_HEROS = Arrays.asList(
+        "Superman",
+        "Batman",
+        "Aquaman",
+        "Asterix",
+        "Captain America"
+    );
 
-  public static void main(String[] args) {
-
-    // Synchronous emission
-    Observable<Object> observable = Observable.create(emitter -> {
-      Thread thread = new Thread(() -> {
-        for (String superHero : SUPER_HEROS) {
-          log("Emitting: " + superHero);
-          emitter.onNext(superHero);
-        }
-        log("Completing");
-        emitter.onComplete();
-      });
-      thread.start();
-    });
-
-    log("---------------- Subscribing");
-    observable.subscribe(
-        item -> {
-          sleep(30);
-          log("Received " + item);
-        }, error -> {
-          sleep(30);
-          log("Error");
-        }, () -> {
-          sleep(30);
-          log("Complete");
+    public static void main(String[] args) {
+        Observable<Object> observable = Observable.create(emitter -> {
+            Thread thread = new Thread(() -> {
+                for (String superHero : SUPER_HEROS) {
+                    log("Emitting: " + superHero);
+                    emitter.onNext(superHero);
+                }
+                log("Completing");
+                emitter.onComplete();
+            });
+            thread.start();
         });
-    log("---------------- Subscribed");
-  }
+
+        log("---------------- Subscribing");
+        observable
+            // Blocking the emission thread
+            .doOnNext(x -> sleep(30))
+            .subscribe(
+                item -> log("Received " + item),
+                error -> log("Error"),
+                () -> log("Complete"));
+        log("---------------- Subscribed");
+    }
 }

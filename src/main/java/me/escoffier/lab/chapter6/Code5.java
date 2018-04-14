@@ -8,51 +8,48 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import static java.util.concurrent.Executors.newFixedThreadPool;
 import static me.escoffier.superheroes.Helpers.log;
 import static me.escoffier.superheroes.Helpers.threadFactory;
 
-import static java.util.concurrent.Executors.newFixedThreadPool;
-
 public class Code5 {
 
-  private static List<String> SUPER_HEROS = Arrays.asList(
-      "Superman",
-      "Batman",
-      "Aquaman",
-      "Asterix",
-      "Captain America"
-  );
+    private static List<String> SUPER_HEROS = Arrays.asList(
+        "Superman",
+        "Batman",
+        "Aquaman",
+        "Asterix",
+        "Captain America"
+    );
 
-  public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
 
-    Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
+        Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
 
-    CountDownLatch latch = new CountDownLatch(1);
+        CountDownLatch latch = new CountDownLatch(1);
 
-    // Synchronous emission
-    Observable<Object> observable = Observable.create(emitter -> {
-      for (String superHero : SUPER_HEROS) {
-        log("Emitting: " + superHero);
-        emitter.onNext(superHero);
-      }
-      log("Completing");
-      emitter.onComplete();
-    });
-
-    log("---------------- Subscribing");
-    observable
-        .subscribeOn(scheduler)
-        .subscribe(
-        item -> {
-          log("Received " + item);
-        }, error -> {
-          log("Error");
-        }, () -> {
-          log("Complete");
-          latch.countDown();
+        // Synchronous emission
+        Observable<Object> observable = Observable.create(emitter -> {
+            for (String superHero : SUPER_HEROS) {
+                log("Emitting: " + superHero);
+                emitter.onNext(superHero);
+            }
+            log("Completing");
+            emitter.onComplete();
         });
-    log("---------------- Subscribed");
 
-    latch.await();
-  }
+        log("---------------- Subscribing");
+        observable
+            .subscribeOn(scheduler)
+            .subscribe(
+                item -> log("Received " + item),
+                error -> log("Error"),
+                () -> {
+                    log("Complete");
+                    latch.countDown();
+                });
+        log("---------------- Subscribed");
+
+        latch.await();
+    }
 }

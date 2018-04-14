@@ -19,12 +19,9 @@ public class Code2 {
   );
 
   public static void main(String[] args) {
-
-
-    // Synchronous emission
     Observable<Object> observable = Observable.create(emitter -> {
       for (String superHero : SUPER_HEROS) {
-        sleep(30);
+        sleep(30); // Introduce fake latency
         log("Emitting: " + superHero);
         emitter.onNext(superHero);
       }
@@ -34,13 +31,9 @@ public class Code2 {
 
     log("---------------- Subscribing");
     observable.subscribe(
-        item -> {
-          log("Received " + item);
-        }, error -> {
-          log("Error");
-        }, () -> {
-          log("Complete");
-        });
+        item -> log("Received " + item),
+        error -> log("Error"),
+        () -> log("Complete"));
     log("---------------- Subscribed");
   }
 

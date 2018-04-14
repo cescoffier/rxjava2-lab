@@ -9,38 +9,31 @@ import static me.escoffier.superheroes.Helpers.log;
 
 public class Code3 {
 
-  private static List<String> SUPER_HEROS = Arrays.asList(
-      "Superman",
-      "Batman",
-      "Aquaman",
-      "Asterix",
-      "Captain America"
-  );
+    private static List<String> SUPER_HEROS = Arrays.asList(
+        "Superman",
+        "Batman",
+        "Aquaman",
+        "Asterix",
+        "Captain America"
+    );
 
-  public static void main(String[] args) {
-
-    // Synchronous emission
-    Observable<Object> observable = Observable.create(emitter -> {
-      Thread thread = new Thread(() -> {
-        for (String superHero : SUPER_HEROS) {
-          log("Emitting: " + superHero);
-          emitter.onNext(superHero);
-        }
-        log("Completing");
-        emitter.onComplete();
-      });
-      thread.start();
-    });
-
-    log("---------------- Subscribing");
-    observable.subscribe(
-        item -> {
-          log("Received " + item);
-        }, error -> {
-          log("Error");
-        }, () -> {
-          log("Complete");
+    public static void main(String[] args) {
+        Observable<Object> observable = Observable.create(emitter -> {
+            new Thread(() -> {
+                for (String superHero : SUPER_HEROS) {
+                    log("Emitting: " + superHero);
+                    emitter.onNext(superHero);
+                }
+                log("Completing");
+                emitter.onComplete();
+            }).start();
         });
-    log("---------------- Subscribed");
-  }
+
+        log("---------------- Subscribing");
+        observable.subscribe(
+            item -> log("Received " + item),
+            error -> log("Error"),
+            () -> log("Complete"));
+        log("---------------- Subscribed");
+    }
 }

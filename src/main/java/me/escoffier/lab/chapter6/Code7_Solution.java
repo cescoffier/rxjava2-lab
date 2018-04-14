@@ -17,48 +17,43 @@ import static me.escoffier.superheroes.Helpers.threadFactory;
 
 public class Code7_Solution {
 
-  private static final int[] SUPER_HEROS_BY_ID = { 641, 65, 37, 142};
+    private static final int[] SUPER_HEROES_BY_ID = {641, 65, 37, 142};
 
-  public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-    SuperHeroesService.run(false);
+        SuperHeroesService.run(false);
 
-    Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
+        Scheduler scheduler = Schedulers.from(newFixedThreadPool(10, threadFactory));
 
-    Observable<String> observable = Observable.<String>create(emitter -> {
-      for (int superHeroId : SUPER_HEROS_BY_ID) {
+        Observable<String> observable = Observable.<String>create(emitter -> {
+            for (int superHeroId : SUPER_HEROES_BY_ID) {
+                // Load a super hero using the blocking URL connection
+                URL url = new URL("http://localhost:8080/heroes/" + superHeroId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder result = new StringBuilder();
+                String line;
+                while ((line = rd.readLine()) != null) {
+                    result.append(line);
+                }
+                rd.close();
+                String superHero = new JsonObject(result.toString()).getString("name");
 
-        // Load a super hero using the blocking URL connection
-        URL url = new URL("http://localhost:8080/heroes/" + superHeroId);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder result = new StringBuilder();
-        String line;
-        while ((line = rd.readLine()) != null) {
-          result.append(line);
-        }
-        rd.close();
-        String superHero = new JsonObject(result.toString()).getString("name");
+                log("Emitting: " + superHero);
+                emitter.onNext(superHero);
+            }
+            log("Completing");
+            emitter.onComplete();
+        })
+            .subscribeOn(Schedulers.io());
 
-        log("Emitting: " + superHero);
-        emitter.onNext(superHero);
-      }
-      log("Completing");
-      emitter.onComplete();
-    })
-        .subscribeOn(scheduler);
-
-    log("---------------- Subscribing");
-    observable
-        .subscribe(
-        item -> {
-          log("Received " + item);
-        }, error -> {
-          log("Error");
-        }, () -> {
-          log("Complete");
-        });
-    log("---------------- Subscribed");
-  }
+        log("---------------- Subscribing");
+        observable
+            .subscribe(
+                item -> log("Received " + item),
+                error -> log("Error"),
+                () -> log("Complete"));
+        log("---------------- Subscribed");
+    }
 }
