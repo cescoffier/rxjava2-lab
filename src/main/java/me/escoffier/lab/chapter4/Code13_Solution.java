@@ -6,7 +6,7 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.ext.web.client.HttpResponse;
 import io.vertx.reactivex.ext.web.codec.BodyCodec;
 import me.escoffier.superheroes.SuperHeroesService;
-import me.escoffier.superheroes.SuperStuff;
+import me.escoffier.superheroes.Character;
 
 import static me.escoffier.superheroes.Helpers.client;
 
@@ -15,15 +15,15 @@ public class Code13_Solution {
     public static void main(String[] args) {
         SuperHeroesService.run();
 
-        Single<SuperStuff> random_heroes = client()
+        Single<Character> random_heroes = client()
             .get("/heroes/random")
-            .as(BodyCodec.json(SuperStuff.class))
+            .as(BodyCodec.json(Character.class))
             .rxSend()
             .map(HttpResponse::body);
 
-        Single<SuperStuff> random_villains = client()
+        Single<Character> random_villains = client()
             .get("/villains/random")
-            .as(BodyCodec.json(SuperStuff.class))
+            .as(BodyCodec.json(Character.class))
             .rxSend()
             .map(HttpResponse::body);
 
@@ -32,7 +32,7 @@ public class Code13_Solution {
 
     }
 
-    private static JsonObject fight(SuperStuff h, SuperStuff v) {
+    private static JsonObject fight(Character h, Character v) {
         String winner = h.getName();
         if (v.getSuperpowers().size() > h.getSuperpowers().size()) {
             winner = v.getName();

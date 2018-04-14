@@ -2,7 +2,7 @@ package me.escoffier.lab.chapter4;
 
 
 import io.reactivex.Flowable;
-import me.escoffier.superheroes.SuperStuff;
+import me.escoffier.superheroes.Character;
 
 import static me.escoffier.superheroes.Helpers.heroes;
 import static me.escoffier.superheroes.Helpers.villains;
@@ -11,10 +11,10 @@ public class Code12_Solution {
 
     public static void main(String[] args) {
         Flowable<String> villains_superpowers =
-            villains().map(SuperStuff::getSuperpowers)
+            villains().map(Character::getSuperpowers)
                 .flatMap(Flowable::fromIterable);
         Flowable<String> heroes_superpowers =
-            heroes().map(SuperStuff::getSuperpowers)
+            heroes().map(Character::getSuperpowers)
                 .flatMap(Flowable::fromIterable);
 
         // Merge both stream using the `mergeWith` operator

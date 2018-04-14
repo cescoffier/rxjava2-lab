@@ -1,7 +1,7 @@
 package me.escoffier.lab.chapter8;
 
 import me.escoffier.superheroes.Helpers;
-import me.escoffier.superheroes.SuperStuff;
+import me.escoffier.superheroes.Character;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ public class BadAsyncTest {
     @Test
     public void theWrongWayToTest() throws Throwable {
         TBox box = new TBox();
-        ArrayList<SuperStuff> stuffs = new ArrayList<>();
+        ArrayList<Character> stuffs = new ArrayList<>();
 
         Helpers.heroes()
                 .subscribe(stuffs::add, box::set, () -> System.out.println("[ done ]"));

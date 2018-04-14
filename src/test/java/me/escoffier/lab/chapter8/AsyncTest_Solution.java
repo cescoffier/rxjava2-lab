@@ -2,7 +2,7 @@ package me.escoffier.lab.chapter8;
 
 import io.reactivex.subscribers.TestSubscriber;
 import me.escoffier.superheroes.Helpers;
-import me.escoffier.superheroes.SuperStuff;
+import me.escoffier.superheroes.Character;
 import org.junit.Test;
 
 import java.util.concurrent.TimeUnit;
@@ -12,7 +12,7 @@ public class AsyncTest_Solution {
 
     @Test
     public void theRightWayToTest() throws TimeoutException {
-        TestSubscriber<SuperStuff> testSubscriber = Helpers.heroes().test();
+        TestSubscriber<Character> testSubscriber = Helpers.heroes().test();
         if (!testSubscriber.awaitTerminalEvent(5, TimeUnit.SECONDS)) {
             throw new TimeoutException("It timed out!");
         }

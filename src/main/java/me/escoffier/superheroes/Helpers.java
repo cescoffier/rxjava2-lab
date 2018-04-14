@@ -50,22 +50,22 @@ public class Helpers {
             .cast(String.class);
     }
 
-    public static Flowable<SuperStuff> heroes() {
+    public static Flowable<Character> heroes() {
         return fs().rxReadFile("src/main/resources/entities.json")
             .map(Buffer::toJsonArray)
             .flatMapPublisher(Flowable::fromIterable)
             .cast(JsonObject.class)
-            .map(j -> j.mapTo(SuperStuff.class))
+            .map(j -> j.mapTo(Character.class))
             .filter(s -> ! s.isVillain());
     }
 
-    public static Flowable<SuperStuff> villains() {
+    public static Flowable<Character> villains() {
         return fs().rxReadFile("src/main/resources/entities.json")
             .map(Buffer::toJsonArray)
             .flatMapPublisher(Flowable::fromIterable)
             .cast(JsonObject.class)
-            .map(j -> j.mapTo(SuperStuff.class))
-            .filter(SuperStuff::isVillain);
+            .map(j -> j.mapTo(Character.class))
+            .filter(Character::isVillain);
     }
 
     public static void sleep(int ms) {

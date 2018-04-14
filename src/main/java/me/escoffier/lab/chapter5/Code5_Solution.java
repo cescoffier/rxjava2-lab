@@ -6,18 +6,18 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.reactivex.core.Vertx;
 import io.vertx.reactivex.core.buffer.Buffer;
 import io.vertx.reactivex.core.file.FileSystem;
-import me.escoffier.superheroes.SuperStuff;
+import me.escoffier.superheroes.Character;
 
 public class Code5_Solution {
 
-	static Flowable<SuperStuff> getHeroesFromFile(Single<String> file) {
+	static Flowable<Character> getHeroesFromFile(Single<String> file) {
 		Vertx vertx = Vertx.vertx();
 		FileSystem fileSystem = vertx.fileSystem();
 		return file.flatMap(name -> fileSystem.rxReadFile(name))
                 .map(Buffer::toJsonArray)
                 .flatMapPublisher(Flowable::fromIterable)
                 .cast(JsonObject.class)
-                .map(j -> j.mapTo(SuperStuff.class))
+                .map(j -> j.mapTo(Character.class))
                 .filter(s -> ! s.isVillain());
 	}
 	

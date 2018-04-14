@@ -63,7 +63,7 @@ public class Scraper {
             || name.contains("Superhero species and types");
     }
 
-    private static Single<SuperStuff> scrap(WebClient client, String name, String url) {
+    private static Single<Character> scrap(WebClient client, String name, String url) {
         return client.getAbs(url)
             .rxSend()
             .map(HttpResponse::bodyAsString)
@@ -73,7 +73,7 @@ public class Scraper {
                 Elements powers = document.select("ul a[href^='/powers/']");
                 List<String> list = powers.stream().skip(1).map(Element::text).collect(Collectors.toList());
                 boolean isHero = ! isVillain(document);
-                return new SuperStuff(name, list, isHero);
+                return new Character(name, list, isHero);
             });
     }
 
