@@ -1,13 +1,13 @@
-== How to create a RX API
+== How to create an RX API
 
-Now that you are experts in RX, let's see how you can create an RX API for your users. First, what do we call _RX API_. A _RX API_ is an API using, and generally returning RX Java types such as `Single`, `Completable` or `Flowable`. This API is made to be asynchronous. Building such an API has several benefits:
+Now that you are experts in RX, let's see how you can create an RX API for your users. First, what do we call _RX API_? An _RX API_ is an API using, and generally returning RX Java types such as `Single`, `Completable` or `Flowable`. This API is made to be asynchronous. Building such an API has several benefits:
 
 * it gives to the user the ability to use the RX operator and call your API that way - it's a great way to handle asynchrony. 
-* it avoids you to re-implement structures to handle streams or async types - because don't be mistaken, asynchrony is hard.
+* it saves you from re-implementing structures to handle streams or async types - because don't be mistaken: asynchrony is hard.
 
 When building such an API there are several cases and questions you need to answer:
 
-1. which types for which method - what RX type do you provide or consume
+1. which types for which method - which RX type do you provide or consume
 2. do you have an existing RX API or do you need to consume a potentially blocking API 
 
 To answer to the first point it depends "how many result you may return". The following table gives you some rules:
@@ -19,7 +19,7 @@ To answer to the first point it depends "how many result you may return". The fo
 | Operation returning one result | `T x()` | `Single<T> x()` | `get()`
 | Operation returning 0 (`null`) or 1 result | `T x()` or `Optional<T> x()` | `Maybe<T> x()` or `Single<Optional<T>> x()` | `findById()`
 | Operation returning multiple results fetched in one step | `Collection<T> x()` | `Single<List<T>> x()` | `getEntries()`
-| Operation returning multiple results produces externally | `x(Listener<T> listener)` | `Observable<T> x()` | `clicks()`, `keystrokes()`
+| Operation returning multiple results produced externally | `x(Listener<T> listener)` | `Observable<T> x()` | `clicks()`, `keystrokes()`
 | Operation returning multiple results fetched in multiple steps supporting back-pressure  (batching, paging, windowing) | `Cursor<T> x()` | `Flowable<T> x()` | `findAll()`
 |=== 
 
@@ -40,7 +40,7 @@ In this section, we are going to implement `SuperAPI` based on the `FileSystem` 
 
 ==== Reading a file with an RX implementation
 
-Let's have a look at the https://vertx.io/docs/vertx-core/java/#_using_the_file_system_with_vert_x[Vert.x FileSystem API] and it's _rx-ified_
+Let's have a look at the link:https://vertx.io/docs/vertx-core/java/#_using_the_file_system_with_vert_x[Vert.x FileSystem API] and it's __rx-ified__
 https://vertx.io/docs/apidocs/io/vertx/reactivex/core/file/FileSystem.html[version]. In `me.escoffier.lab.chapter5.Code1`, we read the full set of super heroes and villains:
 
 [source, java]
@@ -48,7 +48,7 @@ https://vertx.io/docs/apidocs/io/vertx/reactivex/core/file/FileSystem.html[versi
 include::../../src/main/java/me/escoffier/lab/chapter5/Code1.java[]
 ----
 
-As you can see it's just a matter of building the right pipeline to get the file content and transform it the result we are looking for. For instance, `me.escoffier.lab.chapter5.Code2` creates a `JsonArray` from the content of the file:
+As you can see it's just a matter of building the right pipeline to get the file contents and transform it to the result we are looking for. For instance, `me.escoffier.lab.chapter5.Code2` creates a `JsonArray` from the contents of the file:
 
 [source, java]
 ----
@@ -70,7 +70,7 @@ In `me.escoffier.lab.chapter5.Code3`, we map the objects read from the file to `
 include::../../src/main/java/me/escoffier/lab/chapter5/Code3.java[]
 ----
 
-Notice the usage of the `cast` operator that just check that the item can be cast to the given class and _cast_ it.
+Notice the usage of the `cast` operator that just checks that the item can be cast to the given class and _casts_ it.
 
 ==== Implementing the heroes and villains methods
 
@@ -112,7 +112,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code6_Solution.java[]
 
 ==== Implementation done!
 
-We have implemented the first variant of our API. Because we have a RX API as input, the implementation is straightforward. Let's now look at more complicated cases.
+We have implemented the first variant of our API. Because we have an RX API as input, the implementation is straightforward. Let's now look at more complicated cases.
 
 
 === Building an RX API from another async but non-RX API
@@ -124,7 +124,7 @@ Let's now rebuild the API based on this method. Fortunately, we just have the `l
 
 In this case you have to bridge an async API with RX, so you do that by using 
 http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#create-io.reactivex.SingleOnSubscribe-[`Single.create`] which will give you an 
-http://reactivex.io/RxJava/javadoc/io/reactivex/SingleEmitter.html[`Emitter`] object that you use to push notifications into the `Single` you're creating (`/Users/clement/Desktop/rxjava2-lab/src/main/java/me/escoffier/lab/chapter5/Code7.java`): 
+http://reactivex.io/RxJava/javadoc/io/reactivex/SingleEmitter.html[`Emitter`] object that you use to push notifications into the `Single` you're creating (`me.escoffier.lab.chapter5.Code7`): 
 
 [source, java]
 ----
@@ -135,7 +135,7 @@ As you can see it's a little bit more complex because you have to deal with comp
 
 === Building an RX API from a non-async source
 
-We are now in the worse case. We need to implement our API but we can't use neither a base RX-API or an asynchronous API. Like for creating `Single`, it is possible to create the other types `Flowable`, `Observable`, `Maybe` and `Completable` from scratch with an `Emitter`.
+We are now in the worst case. We need to implement our API but we can use neither a base RX-API nor an asynchronous API. Like for creating `Single`, it is possible to create the other types `Flowable`, `Observable`, `Maybe` and `Completable` from scratch with an `Emitter`.
 
 In the next example, we're going to use  http://reactivex.io/RxJava/javadoc/io/reactivex/Observable.html#create-io.reactivex.ObservableOnSubscribe-[`Observable.create`] to push all the files (recursively) found in the specific directory.
 
@@ -325,7 +325,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code19_Solution.java[]
 ----
 ****
 
-Using threads like this is not recommended. But you need to be aware of the possibility. The last set of example have illustrated issues when dealing with blocking operations. Fortunately, RX proposes various solutions to handle this case. This is covered in the next chapter.
+Using threads like this is not recommended. But you need to be aware of the possibility. The last set of examples have illustrated issues when dealing with blocking operations. Fortunately, RX proposes various solutions to handle these cases. This will be covered in the next chapter.
 
 === Conclusion
 

@@ -18,7 +18,7 @@ include::chapters/3-single_completable_maybe.adoc[Streams of 1, 0, 0..1 and n el
 
 include::chapters/4-operators.adoc[Manipulating Streams and Data]
 
-include::chapters/5-creating_a_rx_api.adoc[Creating RX API]
+include::chapters/5-creating_an_rx_api.adoc[Creating an RX API]
 
 include::chapters/6-schedulers.adoc[Schedulers and concurrency]
 
