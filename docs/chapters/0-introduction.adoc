@@ -2,7 +2,7 @@
 
 In this lab, we are going to see how Reactive eXtension for Java (RX Java) let you use reactive programming and build concurrent and responsive applications.
 
-This lab offers attendees an intro-level, hands-on session with RX Java, from the first line of code, to making a library exposing RX Java API. It illustrates what reactive programming is, and how to build applications using this paradigm. Yes, because it's a paradigm and it's quite different from _traditional_ Java development.
+This lab offers attendees an intro-level, hands-on session with RX Java, from the first line of code, to make a library exposing RX Java API. It illustrates what reactive programming is, and how to build applications using this paradigm. Yes, because it's a paradigm and it's quite different from _traditional_ Java development.
 
 This is a BYOL (Bring Your Own Laptop) session, so bring your Windows, OSX, or Linux laptop. You need JDK 8+ on your machine, and Apache Maven (3.5+).
 
@@ -16,7 +16,7 @@ We will get to the good stuff, coding all the way soon... But before we start, w
 * Memory: At least 4 GB+
 
 ==== Java Development Kit
-We need a JDK 8+ installed on our machine. Latest JDK can downloaded from:
+We need a JDK 8+ installed on our machine. Latest JDK can be downloaded from:
 
 * http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8]
 
@@ -46,7 +46,7 @@ If you don’t have an IDE, here are the step to get started with Eclipse.
 git clone https://github.com/cescoffier/rxjava2-lab.git
 ----
 
-You can import the code in your IDE as a Maven project. You can refer to your IDE documentation to know how to import Maven projects.
+You can import the code into your IDE as a Maven project. You can refer to your IDE documentation to know how to import Maven projects.
 
 For Eclipse:
 

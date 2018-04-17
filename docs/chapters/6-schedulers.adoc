@@ -2,7 +2,7 @@
 
 When creating an RX API, it is key to realize that the threading model of your API and the threading of the application consuming your API can be different and might interfere:
 
-* The threading model of your API is defined by the the APIs your implementation uses
+* The threading model of your API is defined by the APIs your implementation uses
 * The threading model of the application is defined by the runtime hosting the application
 
 Here are a few examples:
@@ -10,7 +10,7 @@ Here are a few examples:
 * your API is implemented with a non-blocking event loop library
 * your API is implemented with JDBC (a thread blocking API)
 * the application runs in a main
-* the application uses thread-per-request model in a servlet container
+* the application uses a thread-per-request model in a servlet container
 * the application runs in a non-blocking event loop server
 
 As API designer, you have two responsibilities:
@@ -20,7 +20,7 @@ As API designer, you have two responsibilities:
 
 And yes sorry, RX won't exempt you from writing documentation, quite the opposite actually.
 
-In this chapter we are going to cover the execution model behind RX and how `Schedulers` helps you manage concurrency. First rule: `Schedulers` do not schedule, so don't be confused by the name. But before diving into schedulers, let's explain how RX emission works. Remember, an emission is when an observed stream is pushing a new item to an observer / subscriber.
+In this chapter, we are going to cover the execution model behind RX and how `Schedulers` helps you manage concurrency. First rule: `Schedulers` do not schedule, so don't be confused by the name. But before diving into schedulers, let's explain how RX emission works. Remember, an emission is when an observed stream is pushing a new item to an observer/subscriber.
 
 === Synchronous emissions
 
@@ -58,7 +58,7 @@ When running this example, you can see a few important points:
 * each emission is followed exactly by its corresponding reception
 * the next statement after the subscription operation happens after all the emissions - meaning that the stream has been completely consumed before.
 
-Synchronous emission is not much of a problem when no latency is involved, i.e when the operations only involve pure computation and don't involve operations that will pause the thread of execution. However when an operations has latency, the synchronous emission will impose this latency to the subscribing thread like we can see in this example (`me.escoffier.lab.chapter6.Code2`).
+Synchronous emission is not much of a problem when no latency is involved, i.e when the operations only involve pure computation and don't involve operations that will pause the thread of execution. However, when an operation has latency, the synchronous emission will impose this latency to the subscribing thread like we can see in this example (`me.escoffier.lab.chapter6.Code2`).
 
 [source, java]
 ----
@@ -85,7 +85,7 @@ This example produces the following output:
 190  main        ---------------- Subscribed
 ----
 
-It is exactly like the previous example, however we can see that the artificial delay in the emission impacts the application code that receives the items. In our example, our stream is very small, so it's not a big deal. But imagine the same code, with a lot more items... The main thread would be blocked for a very long time. Definitely not great.
+It is exactly like the previous example, however, we can see that the artificial delay in the emission impacts the application code that receives the items. In our example, our stream is very small, so it's not a big deal. But imagine the same code, with a lot more items... The main thread would be blocked for a very long time. Definitely not great.
 
 === Asynchronous emissions
 
@@ -121,11 +121,11 @@ With this example:
 
 * 2 threads are involved, `main` and `Thread-0` created using `new Thread(...).start()`
 * the `main` thread is the application thread
-* the `Thread-0` thread is is used for emitting the items
+* the `Thread-0` thread is used for emitting the items
 * each emission is followed exactly by its corresponding reception (like before) because it reuses the emitter thread
-* the subscription happens and returns immediately, before the actual observable completion happens
+* the subscription happens and returns immediately before the actual observable completion happens
 
-In this situation the application's _main_ thread will not clearly be impacted by the API pauses, however some parts of the application will now be executed on the _Thread-0_ thread. If the code chooses to block (for example using a blocking method), then the emitter thread will be impacted by the blocking. This means that it won't be able to emit another item until the thread is unblocked. This is **very** important to understand. When you write long pipelines, with multiple stages, if one of the stage blocks, you are blocking the next emission. While sometimes it's what you want to do, don't forget that if your are observing a hot stream, the emissions will be buffered somewhere (if you don't or can't use back pressure). This behavior is illustrated in `me.escoffier.lab.chapter6.Code4`:
+In this situation the application's _main_ thread will not clearly be impacted by the API pauses, however, some parts of the application will now be executed on the _Thread-0_ thread. If the code chooses to block (for example using a blocking method), then the emitter thread will be impacted by the blocking. This means that it won't be able to emit another item until the thread is unblocked. This is **very** important to understand. When you write long pipelines, with multiple stages, if one of the stage blocks, you are blocking the next emission. While sometimes it's what you want to do, don't forget that if you are observing a hot stream, the emissions will be buffered somewhere (if you don't or can't use back pressure). This behavior is illustrated in `me.escoffier.lab.chapter6.Code4`:
 
 [source, java]
 ----
@@ -189,7 +189,7 @@ Run this example, you should see:
 91   Scheduler-0                   Complete
 ----
 
-We perform an asynchronous emission like before but instead of managing the thread directly we use the `subscribeOn` operation to to execute the emitter's `subscribe` operation on the scheduler.
+We perform an asynchronous emission like before but instead of managing the thread directly we use the `subscribeOn` operation to execute the emitter's `subscribe` operation on the scheduler.
 
 _NOTE_: the countdown latch is used to keep the program running until the end of the streams.
 
@@ -226,18 +226,18 @@ We perform a synchronous emission but the subscriber thread now executes on the 
 
 ==== Schedulers
 
-In the 2 previous examples we have used a scheduler backed by a fixed thread pool created from a Java executor. There are different predefined schedulers by RxJava you can use too:
+In the 2 previous examples, we have used a scheduler backed by a fixed thread pool created by a Java executor. There are different predefined schedulers by RxJava you can use too:
 
 * The `computation` scheduler for computational work such as event-loops and callback processing. This scheduler uses a fixed number of threads based on the processor count available to your Java process, making it appropriate for computational tasks. Computational tasks (such as math, algorithms, and complex stuff) may utilize cores to their fullest extent. Therefore, there is no benefit in having more worker threads than available cores to perform such work.
-* The `io` scheduler for IO bound operations - This scheduler is used for (blocking) IO tasks such as reading and writing databases, web requests, and disk storage are less expensive on the CPU and often have idle time waiting for the data to be sent or come back. This means you can create threads more liberally, and `Schedulers.io()` is appropriate for this use case. However, it maintains as many threads as there are tasks and grows, caches, and reduces the number of threads as needed. In the case of application with lots of concurrent access, this scheduler can be problematic as it can create too many threads.
+* The `io` scheduler for IO bound operations - This scheduler is used for (blocking) IO tasks such as reading and writing databases, web requests, and disk storage are less expensive on the CPU and often have idle time waiting for the data to be sent or come back. This means you can create threads more liberally, and `Schedulers.io()` is appropriate for this use case. However, it maintains as many threads as there are tasks and grows, caches, and reduces the number of threads as needed. In the case of an application with lots of concurrent access, this scheduler can be problematic as it can create too many threads.
 * The `new thread` scheduler creates a new thread for each task. It does not use a pool and creates a new thread for each observer. The thread is destroyed when the observed stream completes. 
 * The `single` scheduler uses a single thread. It's appropriate for event-looping. It can be useful when dealing with fragile and non-thread-safe code.
 
-In addition if you are using Vert.x, it provides additional RxJava schedulers to execute operations within Vert.x thread pools (event loop and worker thread pools).
+In addition, if you are using Vert.x, it provides additional RxJava schedulers to execute operations within Vert.x thread pools (event loop and worker thread pools).
 
 === Schedulers in practice
 
-Now let's see a couple of examples where we can directly apply schedulers to control the concurrency of our API. In the first exercise we use the `java.net.HttpURLConnection` to achieve an HTTP request to the _Super Heroes Service_. `HttpURLConnection` is certainly one of the worst way to do an HTTP request but it's a good example of an API that blocks waiting for IO completions. In `me.escoffier.lab.chapter6.Code7`, use the `subscribeOn`, to change the thread performing the HTTP requests. As it's clearly an io task, use the `Schedulers.io()` scheduler.
+Now let's see a couple of examples where we can directly apply schedulers to control the concurrency of our API. In the first exercise, we use the `java.net.HttpURLConnection` to achieve an HTTP request to the _Super Heroes Service_. `HttpURLConnection` is certainly one of the worst ways to do an HTTP request but it's a good example of an API that blocks waiting for IO completions. In `me.escoffier.lab.chapter6.Code7`, use the `subscribeOn`, to change the thread performing the HTTP requests. As it's clearly an io task, use the `Schedulers.io()` scheduler.
 
 [.assignment]
 ****
@@ -299,7 +299,7 @@ Notice that each emission is performed on the scheduler thread and each notifica
 
 === Conclusion
 
-We have seen that RxJava `subscribeOn` and `observeOn` are powerful tool for controlling the execution thread of emissions and notifications. We used mainly the `Observable` type, but these applies to all reactive types: `Single`, `Flowable`, `Completable` and `Maybe`.
+We have seen that RxJava `subscribeOn` and `observeOn` are powerful tools for controlling the execution thread of emissions and notifications. We used mainly the `Observable` type, but these apply to all reactive types: `Single`, `Flowable`, `Completable` and `Maybe`.
 
 Your API should be as consistent as possible across all reactive methods, to respect the principle of least surprise. An application requiring to be notified on a different thread can always use `observeOn` to chose the scheduler the notifications will take place on.
 

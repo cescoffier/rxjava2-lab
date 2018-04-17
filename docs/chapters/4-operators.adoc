@@ -18,7 +18,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code1_Solution.java[]
 ----
 ****
 
-_Note_: On a `Single`, filter allows you to transform it as a `Maybe`.
+_Note_: On a `Single`, the `filter` method allows you to transform it as a `Maybe`.
 
 ==== First & Last
 
@@ -32,7 +32,7 @@ The `last` / `lastElement` / `lastOrError` operators are the mirror operators fo
 
 ==== Skip and Take
 
-The `skip` operator creates a stream that skips the first items emitted by the observed stream and emits the remainder. `skip` accepts a number of items, but also provides a time based variant skipping all items emitted during a given time window. `skipLast` is the mirror operator trimming the end of the stream. 
+The `skip` operator creates a stream that skips the first items emitted by the observed stream and emits the remainder. `skip` accepts a number of items, but also provides a time-based variant skipping all items emitted during a given time window. `skipLast` is the mirror operator trimming the end of the stream. 
 
 The `take` operator creates a stream which emits only the first items emitted by the observed stream. As `skip`, `take` provides a time-based variant and a `takeLast` variant.
 
@@ -75,7 +75,7 @@ The `me.escoffier.lab.chapter4.Code5` illustrates these two operators.
 include::../../src/main/java/me/escoffier/lab/chapter4/Code5.java[]
 ----
 
-Run this example and check the difference. `reduce` is emitting a single value when the observed streams is completed. `scan` emits all computed values, including the seed (0 (seed), 0 + 0, 0 + 1, 1 + 2...).
+Run this example and check the difference. `reduce` is emitting a single value when the observed streams are completed. `scan` emits all computed values, including the seed (0 (seed), 0 + 0, 0 + 1, 1 + 2...).
 
 [source]
 ----
@@ -93,7 +93,7 @@ Run this example and check the difference. `reduce` is emitting a single value w
 [Reduce] Got 45
 ----
 
-Open the `me.escoffier.lab.chapter4.Code6` and `me.escoffier.lab.chapter4.Code7` and fill the code to use the `scan` and `reduce` methods. You will finally know if super heroes have more superpowers than super villains.
+Open the `me.escoffier.lab.chapter4.Code6` and `me.escoffier.lab.chapter4.Code7` and fill the code to use the `scan` and `reduce` methods. You will finally know if superheroes have more superpowers than supervillains.
 
 [.assignment]
 ****
@@ -133,14 +133,14 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code9.java[]
 
 You may wonder why the method is named `flatMapPublisher`, it's because by default `flatMap` returns a stream of the same type. So `Single.flatMap` returns a `Single`. Fortunately, the method `flatMapCompletable`, `flatMapMaybe` and `flatMapPublisher` (for `Flowable`) let us transform the type of streams.
 
-`FlatMap` is also used as a composing operator to express a sequential composition. For example chaining two HTTP requests as illustrated in `me.escoffier.lab.chapter4.Code10`:
+`FlatMap` is also used as a composing operator to express a sequential composition. For example, chaining two HTTP requests as illustrated in `me.escoffier.lab.chapter4.Code10`:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter4/Code10.java[]
 ----
 
-You can also use `flatMap` to execute a set of request once the first one has completed as illustrated in `me.escoffier.lab.chapter4.Code11`:
+You can also use `flatMap` to execute a second request once the first one has completed as illustrated in `me.escoffier.lab.chapter4.Code11`:
 
 [source, java]
 ----
@@ -153,7 +153,7 @@ RX Java also provides operators to merge streams or to associate items from diff
 
 The `mergeWith` operator merges the current stream with other ones. The produced stream contains all the items from the merged streams in the order of their emissions. If you prefer not mixing the items use `concatWith` but be aware it does not work for unbounded streams.
 
-Open the class `me.escoffier.lab.chapter4.Code12` and fill the code to count the number of super powers.
+Open the class `me.escoffier.lab.chapter4.Code12` and fill the code to count the number of superpowers.
 
 [.assignment]
 ****
@@ -163,7 +163,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code12_Solution.java[]
 ----
 ****
 
-The `zipWith` operator associates items from different streams. It takes the _next_ items emitted by each stream and calls a function with all of them. For example, we can use this to generate super heroes vs. super villains battles. Open the `me.escoffier.lab.chapter4.Code13` class and fill the code to generate fights between heroes and villains.
+The `zipWith` operator associates items from different streams. It takes the _next_ items emitted by each stream and calls a function with all of them. For example, we can use this to generate superheroes vs. supervillains battles. Open the `me.escoffier.lab.chapter4.Code13` class and fill the code to generate fights between heroes and villains.
 
 [.assignment]
 ****
@@ -175,9 +175,9 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code13_Solution.java[]
 
 === Error recovery
 
-Even when using RX, error happens. I told you it's not a silver bullet. But, I've a good news for you: there are operators to handle error recovery. 
+Even when using RX, errors and failures happen. I told you it's not a silver bullet. But, I've got a good news for you: there are operators to handle error recovery. 
 
-Let's start with some _simple" case. Image you want to emit a request to our Super Heroes and Villains service, but the service is not started. Something like the `me.escoffier.lab.chapter4.Code14` class:
+Let's start with some _simple_ case. Imagine you want to emit a request to our Super Heroes and Villains service, but the service is not started. Something like the `me.escoffier.lab.chapter4.Code14` class:
 
 [source, java]
 ----
@@ -201,7 +201,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code14_Solution.java[]
 ----
 ****
 
-The `onErrorResumeNext` operator is similar to `onErrorReturnItem` but returns a stream. Basically, if an error happen, it replaces the stream with the given one. Open the `me.escoffier.lab.chapter4.Code15` class and use the `onErrorResumeNext` to inject another `Single`. You can use `Single.just` to create a stream with an already known value.
+The `onErrorResumeNext` operator is similar to `onErrorReturnItem` but returns a stream. Basically, if an error happens, it replaces the stream with the given one. Open the `me.escoffier.lab.chapter4.Code15` class and use the `onErrorResumeNext` to inject another `Single`. You can use `Single.just` to create a stream with an already known value.
 
 [.assignment]
 ****
@@ -213,10 +213,10 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code15_Solution.java[]
 
 The `onErrorResumeNext` is quite useful when you want to execute another async operation when an initial one failed. It also can substitute a stream in error with a default stream similar to a _switchOnError_ operator (that does not exist).
 
-The last error recovery mechanism we are going to see is very powerful but can be dangerous too. The `retry` operator re-subscribes to a stream that emitted an error. It's behavior depends on the cold / hot nature of the observed stream. On a cold stream, the resubscription restarts the stream from the beginning. To it's very useful to retry a failed operation such as a HTTP call. The retry operator has several variant letting you decide whether or not you want to retry based on the error and the number of attempts.
+The last error recovery mechanism we are going to see is very powerful but can be dangerous too. The `retry` operator re-subscribes to a stream that emitted an error. Its behavior depends on the cold/hot nature of the observed stream. On a cold stream, the resubscription restarts the stream from the beginning. To it's very useful to retry a failed operation such as an HTTP call. The retry operator has several variants letting you decide whether or not you want to retry based on the error and the number of attempts.
 
 === Conclusion
 
 This chapter introduced a few operators. RX Java 2 is proposing a lot more operators. Check the https://github.com/ReactiveX/RxJava/wiki/Alphabetical-List-of-Observable-Operators[operator list] to see the full list.
 
-Now you have enough knowledge to start building a RX Java API.
+Now you have enough knowledge to start building an RX Java API.

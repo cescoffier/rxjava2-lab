@@ -2,13 +2,13 @@
 
 === Anatomy of a stream
 
-What's a _stream_. A stream is a sequence of data, potentially unbounded. This data may be known or unknown when the stream is created. We will see later that some special streams emit a single item, and some none at all. Streams are asynchronous constructs. When you observe a stream, you don't know when data is going to be emitted.
+What's a _stream_? A stream is a sequence of data, potentially unbounded. This data may be known or unknown when the stream is created. We will see later that some special streams emit a single item and some none at all. Streams are asynchronous constructs. When you observe a stream, you don't know when data is going to be emitted.
 
-In a (regular) _stream_, 3 types of items can be conveyed, and so an observer can receive 3 types of events, each of them is notified using one of the following method:
+In a (regular) _stream_, 3 types of items can be conveyed, and so an observer can receive 3 types of events, each of them is notified using one of the following methods:
 
 * `onNext` - this passes each item the observed stream is emitting
 * `onComplete` - this communicates the end of the stream. `onNext` won't be called anymore. This notification does not happen on unbounded streams
-* `onError` - this communicates that something bad happened up the chain to the observer. Unless there is a `retry` (we will cover this later), the stream won't emit anymore items. `onComplete` is not called either in this case.
+* `onError` - this communicates that something bad happened up the chain to the observer. Unless there is a `retry` (we will cover this later), the stream won't emit any more items. `onComplete` is not called either in this case.
 
 Time to go back to code. Open the `me.escoffier.lab.chapter2.Code1` class, and extend the code to display a message (using `System.out.println`) when:
 
@@ -74,13 +74,13 @@ include::../../src/main/java/me/escoffier/lab/chapter2/Code3_Solution.java[]
 ----
 ****
 
-In this example the stream is created with the method `just` taking the list of items as parameter.
+In this example, the stream is created with the method `just` taking the list of items as a parameter.
 
 === Creating more dynamic streams
 
-So far we always used a stream with a fixed collection of values. Of course, items emitted by streams may be unknown at creation time. But let's see how streams works first.
+So far we always used a stream with a fixed collection of values. Of course, items emitted by streams may be unknown at creation time. But let's see how streams work first.
 
-The `create` method takes a method in parameter called on every subscription (so for every subscriber). The following code shows how this method is used:
+The `create` method takes a method in a parameter called on every subscription (so for every subscriber). The following code shows how this method is used:
 
 [source, java]
 ----
@@ -97,7 +97,7 @@ include::../../src/main/java/me/escoffier/lab/chapter2/Code5_Solution.java[]
 ----
 ****
 
-When you run it you can notice the same behavior as before: once an error is injected, the other values are not received by the subscriber (even if the stream continues emitting errors). This is because, once the error is received, the subscription is cancelled - meaning that it does not observe the events anymore. 
+When you run it you can notice the same behavior as before: once an error is injected, the other values are not received by the subscriber (even if the stream continues emitting errors). This is because, once the error is received, the subscription is canceled - meaning that it does not observe the events anymore. 
 
 Let's see another example to exhibit this behavior:
 
@@ -106,7 +106,7 @@ Let's see another example to exhibit this behavior:
 include::../../src/main/java/me/escoffier/lab/chapter2/Code6.java[]
 ----
 
-This application takes user input and builds a stream out of them. So for every line it emits the value. If the line contains "error", an error is injected. If the line contains "done" the stream is closed. If you run the application and enter: `hello`, `foo`, `error`, `not received anymore` you get the following output:
+This application takes user input and builds a stream out of them. So for every line, it emits the value. If the line contains "error", an error is injected. If the line contains "done" the stream is closed. If you run the application and enter: `hello`, `foo`, `error`, `not received anymore` you get the following output:
 
 [source]
 ----
@@ -152,7 +152,7 @@ As you can see, both subscribers get the full set of items.
 
 Unlike cold streams, hot streams broadcast the same items to all listening subscribers. However, if a subscriber arrives later, it won't receive the previous items. Logically, hot streams represent _events_ or _facts_ rather than known finite data sets.
 
-Let's imagine a counter. This counter is incremented every second, and this value is emitted in a stream. When a subscriber start listening it only get the data emitted after that. This behavior is depicted in the `me.escoffier.lab.chapter2.Code8` class:
+Let's imagine a counter. This counter is incremented every second, and this value is emitted in a stream. When a subscriber starts listening to, it only gets the data emitted after that. This behavior is depicted in the `me.escoffier.lab.chapter2.Code8` class:
 
 [source, java]
 ----
@@ -183,16 +183,16 @@ There are ways to transform cold stream into hot stream named `ConnectableObserv
 
 Cleanup is always a good thing. In the previous example, we had 2 subscribers. Let's reuse this example, but this time _cancel the subscription_ after some time. 
 
-The `subscribe` method returns a `io.reactivex.disposables.Disposable` object that allows cancelling the subscription using the `dispose` method. The class `me.escoffier.lab.chapter2.Code9` uses this method to cancel the subscription to the hot stream:
+The `subscribe` method returns a `io.reactivex.disposables.Disposable` object that allows canceling the subscription using the `dispose` method. The class `me.escoffier.lab.chapter2.Code9` uses this method to cancel the subscription to the hot stream:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter2/Code9.java[]
 ----
 
-Once cancelled, the subscriber does not receive any event anymore. It does not get a completion event either.
+Once canceled, the subscriber does not receive any event anymore. It does not get a completion event either.
 
 === Streams, streams, streams...
 
-In this chapter we have seen how streams are structured, how they behave and how observers/subscribers work. We have only seen streams containing a set of data. In the next chapter we will see some more special streams.
+In this chapter, we have seen how streams are structured, how they behave and how observers/subscribers work. We have only seen streams containing a set of data. In the next chapter, we will see some more special streams.
 

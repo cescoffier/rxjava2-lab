@@ -1,6 +1,6 @@
 == Single, Completable, Maybe and Flowable
 
-In the previous chapters we have used streams containing several items. In this chapter, we are going to see some specialized streams:
+In the previous chapters, we have used streams containing several items. In this chapter, we are going to see some specialized streams:
 
 * Single - A stream emitting 1 item
 * Maybe - A stream emitting 0 or 1 item
@@ -9,7 +9,7 @@ In the previous chapters we have used streams containing several items. In this 
 
 === Single
 
-A `Single` is a specialized stream that only emit one item. It works like the `Observable` streams we have seen previously but is limited to operators that make sense for a single emission. Typically, `doOnNext` and `doOnComplete` are replaced by `doOnSuccess` that accept the produced item.
+A `Single` is a specialized stream that only emits one item. It works like the `Observable` streams we have seen previously but is limited to operators that make sense for a single emission. Typically, `doOnNext` and `doOnComplete` are replaced by `doOnSuccess` that accept the produced item.
 
 In `me.escoffier.lab.chapter3.Code1`, you can see how this new method is used:
 
@@ -28,7 +28,7 @@ include::../../src/main/java/me/escoffier/lab/chapter3/Code2_Solution.java[]
 ----
 ****
 
-Singles are often used for asynchronous operations returning a single result, such as an HTTP request. The following example uses the Vert.x Web Client to retrieve a list of super heroes:
+Singles are often used for asynchronous operations returning a single result, such as an HTTP request. The following example uses the Vert.x Web Client to retrieve a list of superheroes:
 
 [source, java]
 ----
@@ -37,7 +37,7 @@ include::../../src/main/java/me/escoffier/lab/chapter3/Code3.java[]
 
 `client().get("/heroes").rxSend()` returns a `Single<HttpResponse>`. The rest of the processing is called when the response is received from the server. 
 
-_Super Heroes & Villains service_: the previous example is the first use of this service. It runs locally on `http://localhost:8080`. Don't forget to stop the example / exercise once done or the next run won't work (because of the port already used). If you want to see what is provided by the service check:
+_Super Heroes & Villains service_: the previous example is the first use of this service. It runs locally on `http://localhost:8080`. Don't forget to stop the example/exercise once done or the next run won't work (because of the port already used). If you want to see what is provided by the service check:
 
 * http://localhost:8080/heroes
 * http://localhost:8080/villains
@@ -71,13 +71,13 @@ The output of this code is:
 [B] Completed
 ----
 
-`Maybe` is often used for methods that may return `null`. For example, an asynchronous version of a `findById` method would return a `Maybe`. Let's use `Maybe` to check if there is a super heroe named "Yoda" and another one named "Clement". Open the `me.escoffier.lab.chapter3.Code5` class and fill the code. The output should be something like:
+`Maybe` is often used for methods that may return `null`. For example, an asynchronous version of a `findById` method would return a `Maybe`. Let's use `Maybe` to check if there is a superhero named "Yoda" and another one named "Clement". Open the `me.escoffier.lab.chapter3.Code5` class and fill the code. The output should be something like:
 
 [source]
 ----
 Loaded 727 heroes and villains
-Yes, Yoda is a super hero
-No, clement is not a super hero
+Yes, Yoda is a superhero
+No, clement is not a superhero
 ----
 
 [.assignment]
@@ -111,7 +111,7 @@ include::../../src/main/java/me/escoffier/lab/chapter3/Code7_Solution.java[]
 
 === Flowable and back pressure
 
-So far, we have seen examples of streams that were pushing items to subscribers. However, there is an issue with this model. If your consumer cannot keep up with the pace, something bad is going to happen. Putting a buffer in between will only handle small bumps. This is where back pressure comes into the picture. But first, let's illustrate the example.
+So far, we have seen examples of streams that were pushing items to subscribers. However, there is an issue with this model. If your consumer cannot keep up with the pace, something bad is going to happen. Putting a buffer in between will only handle small bumps. This is where back-pressure comes into the picture. But first, let's illustrate the example.
 
 In `me.escoffier.lab.chapter3.Code8`, we create a stream of integers and display them in the `subscribe` method after a small nap:
 
@@ -125,13 +125,13 @@ It gives the following output:
 [source]
 ----
 Constructing item using 1
-Received : 1
+Received: 1
 Constructing item using 2
-Received : 2
+Received: 2
 Constructing item using 3
 Received : 3
 Constructing item using 4
-Received : 4
+Received: 4
 ----
 
 If you run this example, everything is fine. Each emission is processed one by one, and one at a time from the source all the way down to the subscriber. This is because a single thread is involved in the process, making everything synchronous. It creates a serialized processing, no problem so far.
@@ -152,7 +152,7 @@ Constructing item using 707290
 Constructing item using 707291
 Constructing item using 707292
 Constructing item using 707293
-Received : 95
+Received: 95
 Constructing item using 707294
 Constructing item using 707295
 Constructing item using 707296
@@ -164,7 +164,7 @@ Constructing item using 707299
 
 We have constructed many items, while the subscriber is only processing the item 95! The emissions of the numbers are too fast for the consumer, and because the emissions are being pushed into an unbounded buffer by `observeOn`, this can be the source of many problems such as... running out of memory.
 
-To mitigate this issue, RX Java 2 provides a stream named `Flowable`. `Flowable` is like `Observable` (it may contain multiple items), but implements a back-pressure protocol. This protocol tells the source stream to emit items at a pace specified by the consumer. `Flowable` uses a protocol named http://www.reactive-streams.org/[Reactive Streams]. This specification has been introduced in Java 9 under the name `java.util.concurrent.Flow` and is becoming widely popular.
+To mitigate this issue, RX Java 2 provides a stream named `Flowable`. `Flowable` is like `Observable` (it may contain multiple items) but implements a back-pressure protocol. This protocol tells the source stream to emit items at a pace specified by the consumer. `Flowable` uses a protocol named http://www.reactive-streams.org/[Reactive Streams]. This specification has been introduced in Java 9 under the name `java.util.concurrent.Flow` and is becoming widely popular.
 
 Let's revisit the previous example, but instead of `Observable.range`, let's use `Flowable.range`. This code is in `me.escoffier.lab.chapter3.Code10`:
 
@@ -185,23 +185,23 @@ Constructing item using 125
 Constructing item using 126
 Constructing item using 127
 Constructing item using 128
-Received : 1
-Received : 2
+Received: 1
+Received: 2
 Received : 3
-Received : 4
-Received : 5
+Received: 4
+Received: 5
 ....
 Constructing item using 221
 Constructing item using 222
 Constructing item using 223
 Constructing item using 224
-Received : 97
-Received : 98
-Received : 99
-Received : 100
-Received : 101
-Received : 102
-Received : 103
+Received: 97
+Received: 98
+Received: 99
+Received: 100
+Received: 101
+Received: 102
+Received: 103
 ....
 ----
 
@@ -211,7 +211,7 @@ Notice that RX Java 2 provides some other back pressure strategies such as using
 
 === Conclusion
 
-In this chapter we have seen a few different specialized streams to handle various situations. The following table summarizes when to use what:
+In this chapter, we have seen a few different specialized streams to handle various situations. The following table summarizes when to use what:
 
 |===
 |Type |Use case

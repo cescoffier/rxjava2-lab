@@ -23,7 +23,7 @@ To answer to the first point it depends "how many result you may return". The fo
 | Operation returning multiple results fetched in multiple steps supporting back-pressure  (batching, paging, windowing) | `Cursor<T> x()` | `Flowable<T> x()` | `findAll()`
 |=== 
 
-In this chapter we are going to create several versions of an API using the Super heroes and villains service. Unlike the one you used before, this one will retrieve the content directly from the file system. The API is defined in `me.escoffier.lab.chapter5.SuperAPI`:
+In this chapter, we are going to create several versions of an API using the Superheroes and villains service. Unlike the one you used before, this one will retrieve the content directly from the file system. The API is defined in `me.escoffier.lab.chapter5.SuperAPI`:
 
 [source, java]
 ----
@@ -32,7 +32,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/SuperAPI.java[]
 
 === Building an RX API from another RX API
 
-If you're lucky and your API is already using RX types in its implementation, then writing and RX API is usually easy, because it's a matter of using all the techniques we showed in the previous chapters to match the flows to what you want to expose.
+If you're lucky and your API is already using RX types in its implementation, then writing and RX API is usually easy because it's a matter of using all the techniques we showed in the previous chapters to match the flows to what you want to expose.
 
 In this section, we are going to implement `SuperAPI` based on the `FileSystem` _rx_ API provided by Eclipse Vert.x.
 
@@ -41,14 +41,14 @@ In this section, we are going to implement `SuperAPI` based on the `FileSystem` 
 ==== Reading a file with an RX implementation
 
 Let's have a look at the link:https://vertx.io/docs/vertx-core/java/#_using_the_file_system_with_vert_x[Vert.x FileSystem API] and it's __rx-ified__
-https://vertx.io/docs/apidocs/io/vertx/reactivex/core/file/FileSystem.html[version]. In `me.escoffier.lab.chapter5.Code1`, we read the full set of super heroes and villains:
+https://vertx.io/docs/apidocs/io/vertx/reactivex/core/file/FileSystem.html[version]. In `me.escoffier.lab.chapter5.Code1`, we read the full set of superheroes and villains:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter5/Code1.java[]
 ----
 
-As you can see it's just a matter of building the right pipeline to get the file contents and transform it to the result we are looking for. For instance, `me.escoffier.lab.chapter5.Code2` creates a `JsonArray` from the contents of the file:
+As you can see it's just a matter of building the right pipeline to get the file contents and transform it into the result we are looking for. For instance, `me.escoffier.lab.chapter5.Code2` creates a `JsonArray` from the contents of the file:
 
 [source, java]
 ----
@@ -74,7 +74,7 @@ Notice the usage of the `cast` operator that just checks that the item can be ca
 
 ==== Implementing the heroes and villains methods
 
-So as you have seen above, when you have a RX API, providing your API on top of is just about providing the right pipeline. Let's start with the easy ones: `villains` and `heroes`. Open the `me.escoffier.lab.chapter5.Code4` class and fill the code to returns the stream of heroes and villains. Use the `Character.isVillain` method as predicates to know if the character is on the good side or bad side.
+So as you have seen above, when you have an RX API, providing your API on top of is just about providing the right pipeline. Let's start with the easy ones: `villains` and `heroes`. Open the `me.escoffier.lab.chapter5.Code4` class and fill the code to returns the stream of heroes and villains. Use the `Character.isVillain` method as predicate to know if the character is on the good side or bad side.
 
 [.assignment]
 ****
@@ -86,7 +86,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code4_Solution.java[]
 
 ==== Implementing the hero and villain methods
 
-Let's increase a bit the difficulty with the `hero` and `villain` API that return a _random_ hero or villain. Open the `me.escoffier.lab.chapter5.Code5` and edit the code to implement the 2 methods. The solution proposes 2 different approaches.
+Let's increase a bit the difficulty with the `hero` and `villain` API that returns a _random_ hero or villain. Open the `me.escoffier.lab.chapter5.Code5` and edit the code to implement the 2 methods. The solution proposes 2 different approaches.
 
 [.assignment]
 ****
@@ -98,7 +98,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code5_Solution.java[]
 
 ==== Implementing the findByName methods
 
-There are 2 `findByName` methods. Both takes a non-null name as parameter. The `findByName` returns a `Maybe`, empty if no character matches. The `findByNameOrError` returns a `Single`. If the lookup failed an error is emitted in the stream.
+There are 2 `findByName` methods. Both take a non-null name as a parameter. The `findByName` returns a `Maybe`, empty if no character matches. The `findByNameOrError` returns a `Single`. If the lookup failed an error is emitted in the stream.
 
 Open the `me.escoffier.lab.chapter5.Code6` class and implement the 2 methods.
 
@@ -118,11 +118,11 @@ We have implemented the first variant of our API. Because we have an RX API as i
 === Building an RX API from another async but non-RX API
 
 In many cases, you will be interacting with non-RX implementations that have their own async variant. Take 
-https://docs.oracle.com/javase/8/docs/api/java/nio/channels/AsynchronousFileChannel.html[`AsynchronousFileChannel`] from the JDK, for example: they allow you to read a file asynchronously, and require a listener from you, which will be notified on success or failure. 
+https://docs.oracle.com/javase/8/docs/api/java/nio/channels/AsynchronousFileChannel.html[`AsynchronousFileChannel`] from the JDK, for example, they allow you to read a file asynchronously, and require a listener from you, which will be notified of success or failure. 
 
 Let's now rebuild the API based on this method. Fortunately, we just have the `load` method to override. 
 
-In this case you have to bridge an async API with RX, so you do that by using 
+In this case, you have to bridge an async API with RX, so you do that by using 
 http://reactivex.io/RxJava/javadoc/io/reactivex/Single.html#create-io.reactivex.SingleOnSubscribe-[`Single.create`] which will give you an 
 http://reactivex.io/RxJava/javadoc/io/reactivex/SingleEmitter.html[`Emitter`] object that you use to push notifications into the `Single` you're creating (`me.escoffier.lab.chapter5.Code7`): 
 
@@ -137,7 +137,7 @@ As you can see it's a little bit more complex because you have to deal with comp
 
 We are now in the worst case. We need to implement our API but we can use neither a base RX-API nor an asynchronous API. Like for creating `Single`, it is possible to create the other types `Flowable`, `Observable`, `Maybe` and `Completable` from scratch with an `Emitter`.
 
-In the next example, we're going to use  http://reactivex.io/RxJava/javadoc/io/reactivex/Observable.html#create-io.reactivex.ObservableOnSubscribe-[`Observable.create`] to push all the files (recursively) found in the specific directory.
+In the next example, we're going to use  http://reactivex.io/RxJava/javadoc/io/reactivex/Observable.html#create-io.reactivex.ObservableOnSubscribe-[`Observable.create`] to push all the files (recursively) found in the specified directory.
 
 Open the `me.escoffier.lab.chapter5.Code8` class and fill in missing code:
 
@@ -173,7 +173,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code9_Solution.java[]
 
 ==== Operation per subscriber
 
-In our previous example, we inadvertently tripped on a common RX user mistake of doing the heavy work before returning the `Observable`, which means that the caller of `getHeroesNames` will pay the cost even if nobody ever subscribes to the returned `Observable`. This can be acceptable in some cases, but in most cases you will want the operations to only be done when someone subscribes to the `Observable`.
+In our previous example, we inadvertently tripped on a common RX user mistake of doing the heavy work before returning the `Observable`, which means that the caller of `getHeroesNames` will pay the cost even if nobody ever subscribes to the returned `Observable`. This can be acceptable in some cases, but in most cases, you will want the operations to only be done when someone subscribes to the `Observable`.
 
 There is another reason to want to do operations for a subscriber, which is that it makes the `Observable` re-usable for more than one subscriber.
 
@@ -193,17 +193,17 @@ Subscriber 1: SuperGirl
 Subscriber 1: Spock
 Subscriber 1: Tigra
 java.lang.IllegalStateException: Directory stream is closed
-	at java.base/sun.nio.fs.UnixDirectoryStream.iterator(UnixDirectoryStream.java:114)
-	at java.base/sun.nio.fs.UnixDirectoryStream.iterator(UnixDirectoryStream.java:126)
-	at io.reactivex.internal.operators.observable.ObservableFromIterable.subscribeActual(ObservableFromIterable.java:35)
-	at io.reactivex.Observable.subscribe(Observable.java:12005)
-	at io.reactivex.internal.operators.observable.ObservableMap.subscribeActual(ObservableMap.java:33)
-	at io.reactivex.Observable.subscribe(Observable.java:12005)
-	at io.reactivex.internal.operators.observable.ObservableDoFinally.subscribeActual(ObservableDoFinally.java:45)
-	at io.reactivex.Observable.subscribe(Observable.java:12005)
-	at io.reactivex.Observable.subscribe(Observable.java:11991)
-	at io.reactivex.Observable.subscribe(Observable.java:11920)
-	at me.escoffier.lab.chapter5.Code10.main(Code10.java:19)
+    at java.base/sun.nio.fs.UnixDirectoryStream.iterator(UnixDirectoryStream.java:114)
+    at java.base/sun.nio.fs.UnixDirectoryStream.iterator(UnixDirectoryStream.java:126)
+    at io.reactivex.internal.operators.observable.ObservableFromIterable.subscribeActual(ObservableFromIterable.java:35)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.internal.operators.observable.ObservableMap.subscribeActual(ObservableMap.java:33)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.internal.operators.observable.ObservableDoFinally.subscribeActual(ObservableDoFinally.java:45)
+    at io.reactivex.Observable.subscribe(Observable.java:12005)
+    at io.reactivex.Observable.subscribe(Observable.java:11991)
+    at io.reactivex.Observable.subscribe(Observable.java:11920)
+    at me.escoffier.lab.chapter5.Code10.main(Code10.java:19)
 ----
 
 This is because we ran the clean-up operation after the first iteration, but we cleaned up an instance of the directory stream that is shared across every subscriber.
@@ -278,7 +278,7 @@ In the next chapter we will cover `Schedulers` in detail, but to understand them
 
 What happened was that we created a `Single` with a `delay` which is supposed to be emitted later in the future, and we subscribed to it, but remember that all that is non-blocking. So RX planned for our `Single` to emit in the future, and returned to the caller thread which called the main thread. And then we returned from the main thread, so the JVM shut down.
 
-In most cases your code will not run from the main thread and the JVM will not terminate when your function is called, like in most back-end servers. So in order to emulate the JVM not terminating there are several ways to make it wait for the RX subscriber to be done, like sleeping longer. Open the `me.escoffier.lab.chapter5.Code15` class. Thanks to a _malicious_ `Thread.sleep` we can ask the main thread to wait a little bit longer.
+In most cases, your code will not run from the main thread and the JVM will not terminate when your function is called, like in most back-end servers. So in order to emulate the JVM not terminating, there are several ways to make it wait for the RX subscriber to be done, like sleeping longer. Open the `me.escoffier.lab.chapter5.Code15` class. Thanks to a _malicious_ `Thread.sleep` we can ask the main thread to wait a little bit longer.
 
 [source, java]
 ----
@@ -311,7 +311,7 @@ include::../../src/main/java/me/escoffier/lab/chapter5/Code18.java[]
 
 ==== When you have no choice but to use a thread
 
-Sometimes you just have to use blocking APIs, even though you want to expose an RX API which can't block the current thread. In this case you can offload your blocking calls to a new thread, or a thread pool, or a special scheduler, whatever you want.
+Sometimes you just have to use blocking APIs, even though you want to expose an RX API which can't block the current thread. In this case, you can offload your blocking calls to a new thread, or a thread pool, or a special scheduler, whatever you want.
 
 This can be done by using `Single.create` which provides you with a `SingleEmitter` object you can call to notify the `Single` when you have your item (by calling `onSuccess`), or an exception (by calling `onError`).
 
@@ -329,4 +329,4 @@ Using threads like this is not recommended. But you need to be aware of the poss
 
 === Conclusion
 
-In this chapter we have seen how to create an RX API that bridges several types of existing APIs, and how to avoid some common mistakes while writing an RX API. In the next chapter we will talk in more detail about how RX is scheduled.
+In this chapter, we have seen how to create an RX API that bridges several types of existing APIs, and how to avoid some common mistakes while writing an RX API. In the next chapter, we will talk in more detail about how RX is scheduled.

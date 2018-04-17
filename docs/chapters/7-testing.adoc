@@ -1,6 +1,6 @@
 == Testing all the things
 
-So far we've built pipelines for processing data and events, and we've run them all from a traditional Java `main` method. Of course you know that unit and integration testing are key ingredients to building sustainable software projects, and it is now time to turn to the test facilities provided by RX Java.
+So far we've built pipelines for processing data and events, and we've run them all from a traditional Java `main` method. Of course, you know that unit and integration testing are key ingredients to building sustainable software projects, and it is now time to turn to the test facilities provided by RX Java.
 
 === Testing streams
 
@@ -33,12 +33,12 @@ include::../../src/main/java/me/escoffier/lab/chapter7/Code02.java[]
 The `requestMore(n)` method allows requesting further elements.
 This is interesting, as we can test what the stream emits in a step-by-step fashion: here we request 2 items, check the currently emitted values and that the completion hasn't been done yet, then request 3 further items and check completion.
 
-We can also see in this example that we can test what happens when a subscription is being cancelled at a very precise point in time, here after 2 events.
-With non-backpressured streams this would be harder to do since a `TestObserver` cannot control when emissions happen.
+We can also see in this example that we can test what happens when a subscription is being canceled at a very precise point in time, here after 2 events.
+With non-back-pressured streams, this would be harder to do since a `TestObserver` cannot control when emissions happen.
 
 === Testing errors
 
-Of course things do not always go according to the plan, and stream processing can end with an error. For all types of streams, we can check the error type, and also perform ad-hoc assertions on the resulting throwable object:
+Of course, things do not always go according to the plan, and stream processing can end with an error. For all types of streams, we can check the error type, and also perform ad-hoc assertions on the resulting throwable object:
 
 [source, java]
 ----
@@ -47,7 +47,7 @@ include::../../src/main/java/me/escoffier/lab/chapter7/Code03.java[]
 
 === Taking control of the clock
 
-Some streams are time-sensitive, as they emit events with delays or an interval-based pace. All of these streams need a scheduler to offload work for a later point in time. You could think of putting threads to sleep and wait for timing events to happen, but this is error-prone (non-determinism) and it slows test execution dramatically. A better solution is to use `io.reactivex.schedulers.TestScheduler`, a scheduler designed for testing. The good thing with `TestScheduler` is that you are the master of time, and you advance it manually. Here is an example where 2 `Single` are being zipped, producing a string value about 1 second from the subscription:
+Some streams are time-sensitive, as they emit events with delays or an interval-based pace. All of these streams need a scheduler to offload work at a later point in time. You could think of putting threads to sleep and wait for timing events to happen, but this is error-prone (non-determinism) and it slows test execution dramatically. A better solution is to use `io.reactivex.schedulers.TestScheduler`, a scheduler designed for testing. The good thing with `TestScheduler` is that you are the master of time, and you advance it manually. Here is an example where 2 `Single` are being zipped, producing a string value about 1 second from the subscription:
 
 [source, java]
 ----
@@ -60,7 +60,7 @@ It is interesting to note that this test actually completes fast as time is not 
 
 === When you cannot control the clock
 
-Of course it is not always possible to control the clock with a `TestScheduler`. A good example is I/O operations: we can't guarantee latency and we often use timeouts. In such cases we need to let the test run on clock time. The following example produces string values every 500ms:
+Of course, it is not always possible to control the clock with a `TestScheduler`. A good example is I/O operations: we can't guarantee latency and we often use timeouts. In such cases, we need to let the test run on clock time. The following example produces string values every 500ms:
 
 [source, java]
 ----
@@ -75,7 +75,7 @@ This is a much better approach than using a `Thread.sleep(t)`...
 
 === Putting it all together in JUnit
 
-We are going to test a HTTP request to a third-party service that returns 520 super heroes. This is all encapsulated in the `me.escoffier.superheroes.Helpers` class. A naive way to test is to assume traditional synchronous semantics and _just_ observe what the stream emits:
+We are going to test an HTTP request to a third-party service that returns 520 superheroes. This is all encapsulated in the `me.escoffier.superheroes.Helpers` class. A naive way to test is to assume traditional synchronous semantics and _just_ observe what the stream emits:
 
 [source, java]
 ----
