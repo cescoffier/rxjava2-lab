@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Code2 {
 
-    private static List<String> SUPER_HEROS = Arrays.asList(
+    private static List<String> SUPER_HEROES = Arrays.asList(
         "Superman",
         "Batman",
         "Aquaman",
@@ -17,7 +17,7 @@ public class Code2 {
     );
 
     public static void main(String... args) {
-        Observable.fromIterable(SUPER_HEROS)
+        Observable.fromIterable(SUPER_HEROES)
             .map(name -> {
                 if (name.endsWith("x")) {
                     throw new RuntimeException("What a terrible failure!");

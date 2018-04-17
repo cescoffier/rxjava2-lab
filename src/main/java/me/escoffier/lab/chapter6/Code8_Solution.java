@@ -18,7 +18,7 @@ import static me.escoffier.superheroes.Helpers.log;
 
 public class Code8_Solution {
 
-    private static final int[] SUPER_HEROS_BY_ID = {641, 65, 37, 142};
+    private static final int[] SUPER_HEROES_BY_ID = {641, 65, 37, 142};
 
     public static void main(String[] args) {
 
@@ -29,7 +29,7 @@ public class Code8_Solution {
         Scheduler contextScheduler = RxHelper.scheduler(context);
 
         Observable<String> observable = Observable.<String>create(emitter -> {
-            for (int superHeroId : SUPER_HEROS_BY_ID) {
+            for (int superHeroId : SUPER_HEROES_BY_ID) {
                 URL url = new URL("http://localhost:8080/heroes/" + superHeroId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");

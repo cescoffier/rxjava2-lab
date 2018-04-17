@@ -14,7 +14,7 @@ import static me.escoffier.superheroes.Helpers.threadFactory;
 
 public class Code5 {
 
-    private static List<String> SUPER_HEROS = Arrays.asList(
+    private static List<String> SUPER_HEROES = Arrays.asList(
         "Superman",
         "Batman",
         "Aquaman",
@@ -30,7 +30,7 @@ public class Code5 {
 
         // Synchronous emission
         Observable<Object> observable = Observable.create(emitter -> {
-            for (String superHero : SUPER_HEROS) {
+            for (String superHero : SUPER_HEROES) {
                 log("Emitting: " + superHero);
                 emitter.onNext(superHero);
             }

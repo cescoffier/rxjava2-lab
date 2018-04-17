@@ -25,7 +25,7 @@ public class Code10 {
             // Transform the response to retrieve a stream of ids.
             .flatMapObservable(j -> Observable.fromIterable(j.fieldNames()))
             // Take the first one
-            .take(10)
+            .take(1)
 
             // Second request
             .flatMapSingle(Code10::getHero)

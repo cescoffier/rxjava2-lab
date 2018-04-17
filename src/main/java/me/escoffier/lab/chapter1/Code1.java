@@ -7,7 +7,7 @@ import io.reactivex.*;
 
 public class Code1 {
 
-    private static List<String> SUPER_HEROS = Arrays.asList(
+    private static List<String> SUPER_HEROES = Arrays.asList(
         "Superman",
         "Batman",
         "Aquaman",
@@ -16,7 +16,7 @@ public class Code1 {
     );
 
     public static void main(String... args) {
-        Observable<String> stream = Observable.fromIterable(SUPER_HEROS);
+        Observable<String> stream = Observable.fromIterable(SUPER_HEROES);
         stream.subscribe(
             name -> System.out.println(name)
         );
