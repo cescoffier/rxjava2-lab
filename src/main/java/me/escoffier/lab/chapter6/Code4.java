@@ -10,7 +10,7 @@ import static me.escoffier.superheroes.Helpers.sleep;
 
 public class Code4 {
 
-    private static List<String> SUPER_HEROS = Arrays.asList(
+    private static List<String> SUPER_HEROES = Arrays.asList(
         "Superman",
         "Batman",
         "Aquaman",
@@ -21,7 +21,7 @@ public class Code4 {
     public static void main(String[] args) {
         Observable<Object> observable = Observable.create(emitter -> {
             Thread thread = new Thread(() -> {
-                for (String superHero : SUPER_HEROS) {
+                for (String superHero : SUPER_HEROES) {
                     log("Emitting: " + superHero);
                     emitter.onNext(superHero);
                 }

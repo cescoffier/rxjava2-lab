@@ -30,8 +30,8 @@ public class Code11_Solution {
 				return;
 			}
 			for(Path path : stream) {
-                emitter.onNext(path);
-            }
+        emitter.onNext(path);
+      }
 			stream.close();
 			emitter.onComplete();
 		}).map(path -> path.toFile().getName());
