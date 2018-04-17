@@ -1,14 +1,14 @@
 == Conclusion
 
-Here we are... it will be time to separate us. But before this, I would like to tell you a few more things.
+Here we are... it will be time to part. But before this, I would like to tell you a few more things.
 
-With the reactive trend, being able to provide asynchronous and reactive API is becoming more and more important. In this lab we have seen one way to build such an API with RX Java. It's not the only way but it's a popular way. RX Java gives you superpowers to build asynchronous and concurrent applications. But as the super hero you are knows: "with great power comes great responsibility". 
+With the reactive trend, being able to provide asynchronous and reactive API is becoming more and more important. In this lab we have seen one way to build such an API with RX Java. It's not the only way but it's a popular way. RX Java gives you superpowers to build asynchronous and concurrent applications. But as a super hero, you know "with great power comes great responsibility". 
 
-Don't believe these agile gurus telling you that documentation is useless. When dealing with asynchronous things, documentation, and mainly _javadoc_, is primordial. Each method must be documented and a few set of aspect must be described:
+Don't believe these agile gurus telling you that documentation is useless. When dealing with asynchronous things, documentation, and mainly _javadoc_, is primordial. Each method must be documented and a few set of aspects must be described:
 
-* How are error propagated
+* How errors are propagated
 * Back-pressure: If there is back-pressure - how the back pressure protocol behaves on your method
-* Scheduler: On which scheduler the method runs on, can it be configured.
+* Scheduler: On which scheduler the method runs, whether it can be configured.
 
 For example, http://reactivex.io/RxJava/javadoc/io/reactivex/Flowable.html#delay-io.reactivex.functions.Function-[the delay operator] is documented as follows:
 
@@ -38,7 +38,7 @@ Returns: a Flowable that delays the emissions of the source Publisher via anothe
 See Also: ReactiveX operators documentation: Delay
 ----
 
-The RX library proposes lots of operator. You can also implement your own. However, this is a complicated task, so before check the following projects providing some custom operators for RX Java 2:
+The RX library proposes lots of operator. You can also implement your own. However, this is a complicated task, so before you do that, you should check the following projects providing some custom operators for RX Java 2:
 
 * https://github.com/akarnokd/RxJava2Extensions[RxJava 2.x extra sources, operators and components and ports of many 1.x companion libraries.]
 * https://github.com/davidmoten/rxjava2-extras[Utilities for use with RxJava 2]

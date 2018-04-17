@@ -38,7 +38,7 @@ With non-backpressured streams this would be harder to do since a `TestObserver`
 
 === Testing errors
 
-Of course things do not always go according to the plan, and stream processing ends with an error. For all types of streams, we can check the error type, and also perform ad-hoc assertions on the resulting throwable object:
+Of course things do not always go according to the plan, and stream processing can end with an error. For all types of streams, we can check the error type, and also perform ad-hoc assertions on the resulting throwable object:
 
 [source, java]
 ----
