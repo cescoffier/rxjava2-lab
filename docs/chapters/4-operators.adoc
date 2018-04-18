@@ -50,14 +50,15 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code2_Solution.java[]
 
 Sometimes, when you realize that your stream is empty, you want to inject some _sensible_ defaults. That's what the `defaultIfEmpty` and `switchIfEmpty` operators are doing.
 
-`me.escoffier.lab.chapter4.Code3` gives an example of `defaultIfEmpty`. It basically injects a default value if the observed stream is empty.
+`me.escoffier.lab.chapter4.Code3` shows an example of `switchIfEmpty`. `switchIfEmpty` returns a stream, so potentially several elements as in:
 
 [source, java]
 ----
 include::../../src/main/java/me/escoffier/lab/chapter4/Code3.java[]
 ----
 
-`me.escoffier.lab.chapter4.Code4` shows an example of `switchIfEmpty`. Unlike the previous example, `switchIfEmpty` returns a stream, so potentially several elements as in:
+
+`me.escoffier.lab.chapter4.Code4` gives an example of `defaultIfEmpty`. It basically injects a default value if the observed stream is empty.
 
 [source, java]
 ----
