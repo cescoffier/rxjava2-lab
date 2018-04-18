@@ -58,7 +58,7 @@ Notice the subtlety about `onSuccess` and `onComplete`. The first one is called 
 
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter3/Code3.java[]
+include::../../src/main/java/me/escoffier/lab/chapter3/Code4.java[]
 ----
 
 The output of this code is:
@@ -66,8 +66,6 @@ The output of this code is:
 [source]
 ----
 [A] Received Superman
-[A] Subscriber Received Superman
-[B] Completion
 [B] Completed
 ----
 
