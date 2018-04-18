@@ -231,7 +231,7 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code15_Solution.java[]
 
 The `onErrorResumeNext` is quite useful when you want to execute another async operation when an initial one failed. It also can substitute a stream in error with a default stream similar to a _switchOnError_ operator (that does not exist).
 
-The last error recovery mechanism we are going to see is very powerful but can be dangerous too. The `retry` operator re-subscribes to a stream that emitted an error. Its behavior depends on the cold/hot nature of the observed stream. On a cold stream, the resubscription restarts the stream from the beginning. To it's very useful to retry a failed operation such as an HTTP call. The retry operator has several variants letting you decide whether or not you want to retry based on the error and the number of attempts.
+The last error recovery mechanism we are going to see is very powerful but can be dangerous too. The `retry` operator re-subscribes to a stream that emitted an error. Its behavior depends on the cold/hot nature of the observed stream. On a cold stream, the resubscription restarts the stream from the beginning. It's very useful to retry a failed operation such as an HTTP call. The retry operator has several variants letting you decide whether or not you want to retry based on the error and the number of attempts.
 
 === Conclusion
 
