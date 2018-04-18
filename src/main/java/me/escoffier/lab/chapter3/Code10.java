@@ -7,7 +7,7 @@ import me.escoffier.lab.chapter2.HotStream;
 public class Code10 {
 
     public static void main(String[] args) {
-        // Create an observable emitting all numbers between 1 and 10000
+        // Create an observable emitting all numbers between 1 and 999_999_999
         Flowable.range(1, 999_999_999)
             .map(Item::new)
             // Emissions are made on the caller thread (main)
