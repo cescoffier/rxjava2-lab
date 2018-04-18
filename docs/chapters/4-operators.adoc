@@ -46,6 +46,23 @@ include::../../src/main/java/me/escoffier/lab/chapter4/Code2_Solution.java[]
 ----
 ****
 
+The output should look like this:
+
+[source]
+----
+Loaded 727 heroes and villains
+Anti-Monitor
+Red Skull
+Anti-Spawn
+Red Mist
+Redeemer II
+Apocalypse
+Rhino
+Redeemer III
+Arclight
+Rick Flag
+----
+
 === Default and Switch
 
 Sometimes, when you realize that your stream is empty, you want to inject some _sensible_ defaults. That's what the `defaultIfEmpty` and `switchIfEmpty` operators are doing.
