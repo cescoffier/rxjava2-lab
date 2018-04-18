@@ -54,11 +54,11 @@ _Super Heroes & Villains service_: the previous example is the first use of this
 * when the stream complete, without a value using the `onComplete` method,
 * when an error is thrown using the `onError` method
 
-Notice the subtlety about `onSuccess` and `onComplete`. The first one is called when there is a value. The second one is called when there is not. This behavior is shown in the class `me.escoffier.lab.chapter3.Code3`:
+Notice the subtlety about `onSuccess` and `onComplete`. The first one is called when there is a value. The second one is called when there is not. This behavior is shown in the class `me.escoffier.lab.chapter3.Code4`:
 
 [source, java]
 ----
-include::../../src/main/java/me/escoffier/lab/chapter3/Code3.java[]
+include::../../src/main/java/me/escoffier/lab/chapter3/Code4.java[]
 ----
 
 The output of this code is:
