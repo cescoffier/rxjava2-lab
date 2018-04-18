@@ -26,7 +26,7 @@ public class Code10 {
             .flatMapObservable(j -> Observable.fromIterable(j.fieldNames()))
             // Take the first one
             .take(1)
-
+            // this is an observable of 1 element
             // Second request
             .flatMapSingle(Code10::getHero)
 

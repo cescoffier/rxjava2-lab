@@ -25,7 +25,7 @@ public class Code11 {
         request1
             // Transform the response to retrieve a stream of ids.
             .flatMapObservable(j -> Observable.fromIterable(j.fieldNames()))
-            // Take the first one
+            // Take the first one, as a Single
             .firstOrError()
 
             // Second request

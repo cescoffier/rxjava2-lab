@@ -158,7 +158,8 @@ You may wonder why the method is named `flatMapPublisher`, it's because by defau
 include::../../src/main/java/me/escoffier/lab/chapter4/Code10.java[]
 ----
 
-You can also use `flatMap` to execute a second request once the first one has completed as illustrated in `me.escoffier.lab.chapter4.Code11`:
+You can also use `flatMap` on a `Single` to execute a second request once the `Single` has completed as illustrated in `me
+.escoffier.lab.chapter4.Code11`:
 
 [source, java]
 ----
