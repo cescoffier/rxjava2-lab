@@ -28,7 +28,7 @@ public class Code13 {
             .map(HttpResponse::body);
 
         // Associate the items emitted by both single and call the fight method.
-        // In the subscribe print the returned json object (using encorePrettily).
+        // In the subscribe print the returned json object (using encodePrettily).
         
 
     }
