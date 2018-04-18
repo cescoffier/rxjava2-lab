@@ -66,8 +66,6 @@ The output of this code is:
 [source]
 ----
 [A] Received Superman
-[A] Subscriber Received Superman
-[B] Completion
 [B] Completed
 ----
 
