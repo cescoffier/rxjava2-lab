@@ -19,14 +19,15 @@ import java.util.stream.Collectors;
 
 public class Helpers {
 
+    private final static Vertx vertx = Vertx.vertx();
+
     public static FileSystem fs() {
-        return Vertx.vertx().fileSystem();
+        return vertx.fileSystem();
     }
 
     public static WebClient client() {
-        Vertx vertx = Vertx.vertx();
         return WebClient.create(vertx,
-            new WebClientOptions().setDefaultPort(8080).setDefaultHost("localhost")
+                new WebClientOptions().setDefaultPort(8080).setDefaultHost("localhost")
         );
     }
 
