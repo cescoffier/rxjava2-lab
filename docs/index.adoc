@@ -1,6 +1,6 @@
 # Rx Java 2 - Reactive Programming and Libraries
-Clement Escoffier, Julien Viet, Stéphane Epardaud, Julien Ponge
-v0.2, April, 14th, 2018
+Clement Escoffier, Julien Viet, Stéphane Epardaud, Julien Ponge, Ozan Günalp
+v0.3, March, 5th, 2019
 :toc: left
 :toclevels: 4
 :imagesdir: images
