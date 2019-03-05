@@ -27,7 +27,7 @@ public class BadAsyncTest {
         Helpers.heroes()
                 .subscribe(stuffs::add, box::set, () -> System.out.println("[ done ]"));
 
-        // Thread.sleep(5000);
+         Thread.sleep(5000);
 
         if (box.t != null) {
             throw box.t;
