@@ -13,7 +13,7 @@ RX Java 2 is a library implementing the reactive programing paradigm.
 In this lab, you learn how to use RX Java 2, the concepts, the operators and the good practices.
 It explains how RX Java 2 lets you build concurrent applications easily, how to manage errors...but RX Java 2 is not a silver bullet! 
 
-This lab also covers how to propose a RX Java API.
+This lab also covers how to propose an RX Java API.
 Indeed, with the reactive movements, lots of blocking and synchronous API are not usable anymore. 
 
 ## Content
