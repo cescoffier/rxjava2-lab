@@ -13,7 +13,7 @@
     <java.version>1.8</java.version>
 
     <rxjava2.version>2.2.7</rxjava2.version>
-    <vertx.version>3.6.3</vertx.version>
+    <vertx.version>3.9.4</vertx.version>
   </properties>
 
   <dependencies>
